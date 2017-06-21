@@ -1,3 +1,4 @@
+#include "console.h"
 
 #define GPM4CON (*(volatile unsigned int *)0x110002e0)
 #define GPM4DAT (*(volatile unsigned int *)0x110002e4)
@@ -13,18 +14,27 @@ extern void system_clock_init(void);
 int main(void)
 {
 	unsigned int tmp;
-	unsigned int i = 0;
+	unsigned int i = 1;
 	
 	/*Init LED*/
     tmp = GPM4CON;  
     tmp &= ~0xffff;  
     tmp |= 0x1111;  
     GPM4CON = tmp; 
-
-//	code_relocate();
-	system_clock_init();
-	for (;; mdelay(1000)) {
-		show_led(++i);	
+	code_relocate();
+	uart_init(115200);
+	
+//	system_clock_init();
+	for (;;mdelay(1000),i++) {
+		show_led(i);
+		puts("hello ");
+		putc('K');
+		putc('e');
+		putc('v');
+		putc('i');
+		putc('n');
+		putc('\r');
+		putc('\n');
 	}
 	return 0;
 }

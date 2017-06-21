@@ -889,3 +889,36 @@
 #define GINTSTS_RXFLvl		(1<<4)
 
 #endif	/* _S5PV310_CPU_H */
+
+/*
+*   APLL= 1400 MHz
+*   MPLL=800 MHz
+*   EPLL=96 MHz
+*   VPLL=108 MHz
+*   freq (ARMCLK) = 1400 MHz at 1.3 V
+*   freq (ACLK_COREM0) = 350 MHz at 1.3V
+*   freq (ACLK_COREM1) = 188 MHz at 1.3 V
+*   freq (PERIPHCLK) = 1400 MHz at 1.3 V
+*   freq (ATCLK) = 214 MHz at 1.3 V
+*   freq (PCLK_DBG) = 107 MHz at 1.3 V
+*   freq (SCLK_DMC) = 400 MHz at 1.0 V
+*   freq (ACLK_DMCD) = 200 MHz at 1.0 V
+*   freq (ACLK_DMCP) = 100 MHz at 1.0 V
+*   freq (ACLK_ACP) = 200 MHz at 1.0 V
+*   freq (PCLK_ACP) = 100 MHz at 1.0 V
+*   freq (SCLK_C2C) = 400 MHz at 1.0 V
+*   freq (ACLK_C2C) = 200 MHz at 1.0 V
+*   freq (ACLK_GDL) = 200 MHz at 1.0 V
+*   freq (ACLK_GPL) = 100 MHz at 1.0 V
+*   freq (ACLK_GDR) = 200 MHz at 1.0 V
+*   freq (ACLK_GPR) = 100 MHz at 1.0 V
+*   freq (ACLK_400_MCUISP) = 400 MHz at 1.0 V
+*   freq (ACLK_200) = 160 MHz at 1.0 V
+*   freq (ACLK_100) = 100 MHz at 1.0 V
+*   freq (ACLK_160) = 160 MHz at 1.0 V
+*   freq (ACLK_133) = 133 MHz at 1.0 V
+*   freq (SCLK_ONENAND) = 160 MHz at 1.0 V
+*/
+
+
+

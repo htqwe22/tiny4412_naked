@@ -21,7 +21,7 @@ OBJDUMP := arm-linux-objdump
 LDFLAGS := -Tthis.lds -nostdlib 
 
 S_OBJS := start.o 
-C_OBJS :=  main.o clock.o
+C_OBJS :=  main.o clock.o uart.o
 CXX_OBJS := 
 
 BIN_NAME := main.bin
@@ -43,6 +43,8 @@ ELFS := $(BIN_NAME:%.bin=%.elf)
 MAP_NAME := $(BIN_NAME:%.bin=%.map)
 DUMP_NAME := $(BIN_NAME:%.bin=%.dis)
 LDFLAGS += -Map $(MAP_NAME) 
+#-lgcc -L/home/ht/.bin/arm-linux-gcc4.5.1/lib/gcc/arm-none-linux-gnueabi/4.5.1/ 
+#CFLAGS += -lgcc -L/home/ht/.bin/arm-linux-gcc4.5.1/lib/gcc/arm-none-linux-gnueabi/4.5.1/
 $(warning SRS is $(SRS),SRC is $(SRC),ELFS is $(ELFS))
 
 $(BIN_NAME):$(OBJS) this.lds

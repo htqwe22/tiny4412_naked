@@ -19,13 +19,18 @@ _start:
 	orr	r0, r0, #0xd3
 	msr	cpsr,r0
 
-
+	/* LED INPUT*/
+	@ldr r0, =0x110002E0
+	@mov r1, #0
+	@str r1, [r0]
+	
 	// 设置堆栈在LB2栈的上面4K的位置，参考IROM手册
-	ldr sp, =0x02028400
+	@ldr sp, =0x02028400
+	ldr sp, =0x0205fffc
 	bl  close_wdt
 	bl  icache_open
 	@/*bl  system_clock_init */
-
+	bl init_led
 	b main
 
 .global code_relocate
@@ -37,14 +42,14 @@ code_relocate:
 	ldr r3, = bss_start
 	cmp r0, r1
 	beq clean_bss
-	DEBUG #1
+	@DEBUG #1
 copy_code:
 	DEBUG #6
 	ldr r2, [r0], #4   @ copy from start
 	str r2, [r1], #4   @ copy to linkaddr
 	cmp r1, r3		   @ copy till the bss start
 	bne copy_code
-	DEBUG #2
+	@DEBUG #2
 	
 clean_bss:
 	ldr r0, = bss_start
@@ -52,14 +57,14 @@ clean_bss:
    	cmp r0, r1
     beq ret
     
-	DEBUG #3
+	@DEBUG #3
    	mov r2, #0
 set_zero:
     str r2, [r0], #4
 	cmp r0, r1
    	bne set_zero
    	
-	DEBUG #4
+	@DEBUG #4
 ret:
 		
 	/*get the current addr of start*/	
@@ -71,16 +76,25 @@ ret:
 	sub r3, r0
 	add lr, r3, r1 @ new lr
 	
-	DEBUG #8
+	@DEBUG #8
+	mov pc, lr
+
+.global init_led
+init_led:
+	ldr r0, =0x110002E0
+	ldr r1, [r0] 
+	ldr r2, =0xffff
+	bic r1, r1, r2
+	ldr r2, =0x00001111
+	orr r1, r1, r2
+	str r1, [r0]
 	mov pc, lr
 	
 .global show_led
 show_led:
 	ldr	r1, =0x110002E0
-	ldr	r2, =0x00001111
-	str	r2, [r1]
 	eor r0,r0,#15
-	and r0,r0,#15
+	@and r0,r0,#15
 	str	r0, [r1, #0x04]
 	mov pc,lr
 	
