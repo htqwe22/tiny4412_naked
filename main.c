@@ -1,5 +1,5 @@
 #include "console.h"
-
+#include "util.h"
 #define GPM4CON (*(volatile unsigned int *)0x110002e0)
 #define GPM4DAT (*(volatile unsigned int *)0x110002e4)
 // key 
@@ -22,12 +22,12 @@ int main(void)
     tmp |= 0x1111;  
     GPM4CON = tmp; 
 	code_relocate();
-	uart_init(115200);
+	init_console();
 	
 //	system_clock_init();
 	for (;;mdelay(1000),i++) {
 		show_led(i);
-		puts("hello ");
+		debug("hello %X ", 255 * 16);
 		putc('K');
 		putc('e');
 		putc('v');

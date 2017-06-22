@@ -35,12 +35,13 @@ void init_console(void)
 int kv_printf(const char *fmt, ...)
 {
 	va_list args;
-	int n;
+	int n,i;
 	char sprint_buf[CONFIG_SYS_PBSIZE];
 	va_start(args, fmt);
 	n = kv_vsprintf(sprint_buf, fmt, args);
 	va_end(args);
-	puts(sprint_buf);
+	for (i = 0; i< n; i++)
+		putc(sprint_buf[i]);
 	return n;
 }
 #if 0
@@ -158,13 +159,45 @@ static char *number(char *buf, unsigned NUM_TYPE num, int base, int size, int pr
 	__rem;							\
  })
 
+#define MAX_LOOP_POWER 16
+static unsigned long long my_div(unsigned long long n, unsigned *base )
+{
+	unsigned left = *base;
+	unsigned long long  this_div = 0;
+#if 0	
+	if (*base == 0 || *base == 1) {
+		*base = 0;
+	}
+#endif	
+	if (left == 16 || left == 8) {
+		if (left == 16)
+			this_div =  n>>4; 
+		else
+			this_div =  n>>3; 
+		*base = n & (left -1);
+		return this_div;	
+	}
+
+
+	while ((left << MAX_LOOP_POWER) <=  n) {
+		this_div += (1 << MAX_LOOP_POWER);
+		n -= (left << MAX_LOOP_POWER);
+	}	
+
+	while (n >= left) {
+		this_div++;
+		n -= left;
+	}
+	*base  = n;
+	return this_div;
+}
 
 static char * number(char * str, unsigned long long num, int base, int size, int precision, int type)
 {
 	char c,sign,tmp[66];
 	const char *digits="0123456789abcdefghijklmnopqrstuvwxyz";
 	int i;
-
+	unsigned left;
 	if (type & LARGE)
 		digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	if (type & LEFT)
@@ -196,7 +229,10 @@ static char * number(char * str, unsigned long long num, int base, int size, int
 	if (num == 0)
 		tmp[i++]='0';
 	else while (num != 0) {
-		tmp[i++] = digits[do_div(num, base)];
+		left = base;
+		num = my_div(num, &left);
+	//	tmp[i++] = digits[do_div(num, base)];
+		tmp[i++] = digits[left];
 	}
 	if (i > precision)
 		precision = i;
