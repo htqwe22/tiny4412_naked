@@ -10,6 +10,7 @@ void mdelay(int time);
 extern show_led(int num);
 extern void code_relocate(void);
 extern void system_clock_init(void);
+extern void debug_clk_regs(int index);
 
 int main(void)
 {
@@ -24,17 +25,11 @@ int main(void)
 	code_relocate();
 	init_console();
 	
-//	system_clock_init();
+	system_clock_init();
+//	init_console();
 	for (;;mdelay(1000),i++) {
 		show_led(i);
-		debug("hello %X ", 255 * 16);
-		putc('K');
-		putc('e');
-		putc('v');
-		putc('i');
-		putc('n');
-		putc('\r');
-		putc('\n');
+	//	debug("hello kevin %#X \r\n", i);
 	}
 	return 0;
 }

@@ -1,3 +1,6 @@
+#include "util.h"
+extern void init_console(void);
+
 // CMU_CPU
 #define CLK_SRC_CPU (*(volatile unsigned int *)0x10044200)
 #define CLK_DIV_CPU0 (*(volatile unsigned int *)0x10044500)
@@ -45,12 +48,60 @@
 #define VPLL_CON1 (*(volatile unsigned int *)0x1003C124)
 #define VPLL_CON2 (*(volatile unsigned int *)0x1003C128)
 
+
+void debug_clk_regs(int index)
+{
+	ibug("\r\n=========== CMU_CPU ============\r\n");
+	ibug("CLK_SRC_CPU:%08X\r\n", CLK_SRC_CPU);
+	ibug("CLK_DIV_CPU0:%08X\r\n", CLK_DIV_CPU0);
+	ibug("CLK_DIV_CPU1:%08X\r\n", CLK_DIV_CPU1);
+
+	ibug("=========== CMU_DMC ============\r\n");
+	ibug("CLK_SRC_DMC:%08X\r\n", CLK_SRC_DMC);
+	ibug("CLK_DIV_DMC0:%08X\r\n", CLK_DIV_DMC0);
+	ibug("CLK_DIV_DMC1:%08X\r\n", CLK_DIV_DMC1);
+
+	ibug("=========== CMU_TOP ============\r\n");
+	ibug("CLK_SRC_TOP0:%08X\r\n", CLK_SRC_TOP0);
+	ibug("CLK_SRC_TOP1:%08X\r\n", CLK_SRC_TOP1);
+	ibug("CLK_DIV_TOP:%08X\r\n", CLK_DIV_TOP);
+
+	
+	ibug("=========== PLL_LOCK ============\r\n");
+	ibug("APLL_LOCK:%08X\r\n", APLL_LOCK);
+	ibug("MPLL_LOCK:%08X\r\n", MPLL_LOCK);
+	ibug("EPLL_LOCK:%08X\r\n", EPLL_LOCK);
+	ibug("VPLL_LOCK:%08X\r\n", VPLL_LOCK);
+	
+	ibug("=========== APLL_CON ============\r\n");
+	ibug("APLL_CON0:%08X\r\n", APLL_CON0);
+	ibug("APLL_CON1:%08X\r\n", APLL_CON1);
+	
+	ibug("=========== MPLL_CON ============\r\n");
+	ibug("MPLL_CON0:%08X\r\n", MPLL_CON0);
+	ibug("MPLL_CON1:%08X\r\n", MPLL_CON1);
+	
+	ibug("=========== EPLL_CON ============\r\n");
+	ibug("EPLL_CON0:%08X\r\n", EPLL_CON0);
+	ibug("EPLL_CON1:%08X\r\n", EPLL_CON1);
+	ibug("EPLL_CON2:%08X\r\n", EPLL_CON2);
+	
+	ibug("=========== VPLL_CON ============\r\n");
+	ibug("VPLL_CON0:%08X\r\n", VPLL_CON0);
+	ibug("VPLL_CON1:%08X\r\n", VPLL_CON1);
+	ibug("VPLL_CON2:%08X\r\n", VPLL_CON2);
+	
+	ibug("--------------- L I N E [%d] -----------------------\r\n", index);
+}
+
 void system_clock_init(void)
 {
 #if 1
 	/*Set CPU to 24M, for safety*/
-	CLK_SRC_CPU = (0);
+	debug_clk_regs(1);
 
+	CLK_SRC_CPU = (0);
+	init_console();
 	// Set APLL 
 
 	/* 设置APLL推荐设置到1400M
@@ -98,7 +149,7 @@ void system_clock_init(void)
 	CLK_DIV_CPU1 = 6 | (0<<4) | (5<<8);
 
 	CLK_SRC_CPU = 1 | (0<<24);
-	show_led(3);
+	debug_clk_regs(2);
 #endif
 }
 

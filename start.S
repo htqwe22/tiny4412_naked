@@ -29,7 +29,6 @@ _start:
 	ldr sp, =0x0205fffc
 	bl  close_wdt
 	bl  icache_open
-	@/*bl  system_clock_init */
 	bl init_led
 	b main
 

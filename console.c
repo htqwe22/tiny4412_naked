@@ -2,8 +2,6 @@
 #include "uart.h"
 #include "util.h"
 
-# define NUM_TYPE long long
-
 /*
  * Storage alignment properties
  */
