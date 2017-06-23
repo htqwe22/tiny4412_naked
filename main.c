@@ -29,7 +29,7 @@ int main(void)
 //	init_console();
 	for (;;mdelay(1000),i++) {
 		show_led(i);
-	//	debug("hello kevin %#X \r\n", i);
+	//	debug("hello kevin %d\r\n", i);
 	}
 	return 0;
 }

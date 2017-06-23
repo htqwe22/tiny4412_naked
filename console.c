@@ -156,12 +156,12 @@ static char *number(char *buf, unsigned NUM_TYPE num, int base, int size, int pr
 	(n) = ((uint64_t)(n)) / __base;				\
 	__rem;							\
  })
-
-#define MAX_LOOP_POWER 16
 static unsigned long long my_div(unsigned long long n, unsigned *base )
 {
+	unsigned char tmp = 0;
 	unsigned left = *base;
 	unsigned long long  this_div = 0;
+	int index ;
 #if 0	
 	if (*base == 0 || *base == 1) {
 		*base = 0;
@@ -175,19 +175,24 @@ static unsigned long long my_div(unsigned long long n, unsigned *base )
 		*base = n & (left -1);
 		return this_div;	
 	}
+	// default: base = 10;
 
-
-	while ((left << MAX_LOOP_POWER) <=  n) {
-		this_div += (1 << MAX_LOOP_POWER);
-		n -= (left << MAX_LOOP_POWER);
-	}	
-
-	while (n >= left) {
-		this_div++;
-		n -= left;
+	for (index = (sizeof(n) <<3 ) -1; index >= 0;index--, tmp <<= 1) {
+		if (n & (1ULL << index)) {
+			tmp |= 1;
+		}
+		// borrow from a higher position.
+		if ((tmp & 0x1f) >= 10) {
+			this_div |= 1ULL << index;
+			tmp -= 10;
+		}
 	}
-	*base  = n;
+	// redo the last shift 
+	tmp >>= 1;
+	*base = tmp & 0xf;
 	return this_div;
+
+	
 }
 
 static char * number(char * str, unsigned long long num, int base, int size, int precision, int type)
