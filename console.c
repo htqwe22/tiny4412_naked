@@ -38,8 +38,11 @@ int kv_printf(const char *fmt, ...)
 	va_start(args, fmt);
 	n = kv_vsprintf(sprint_buf, fmt, args);
 	va_end(args);
-	for (i = 0; i< n; i++)
+	for (i = 0; i< n; i++) {
+		if (sprint_buf[i] == '\n')
+			putc('\r');
 		putc(sprint_buf[i]);
+	}
 	return n;
 }
 #if 0

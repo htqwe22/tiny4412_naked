@@ -4,8 +4,7 @@ OUTPUT_ARCH(arm)
 SECTIONS
 {
 /*. = 0x02023400;*/
-. = 0x40000000;
-. = 0x02023400;
+. = 0x02030000;
 .text : { *(.text) }
 .data : { *(.data) }
 bss_start = .;

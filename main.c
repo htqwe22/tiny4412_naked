@@ -8,28 +8,29 @@
 
 void mdelay(int time);
 extern show_led(int num);
-extern void code_relocate(void);
 extern void system_clock_init(void);
 extern void debug_clk_regs(int index);
+extern void code_relocate(void);
+extern void init_led(void);
+extern unsigned int get_start(void);
+extern unsigned int get_code_size(void);
 
-int main(void)
+int gnum[256];
+int _main(unsigned int start, unsigned int sp)
 {
-	unsigned int tmp;
+	unsigned int link_start;
 	unsigned int i = 1;
-	
-	/*Init LED*/
-    tmp = GPM4CON;  
-    tmp &= ~0xffff;  
-    tmp |= 0x1111;  
-    GPM4CON = tmp; 
-	code_relocate();
 	init_console();
-	
-	system_clock_init();
+	code_relocate();	
+	link_start = get_start();
+	debug("hello world (%X, %X, %X)\n", start, link_start, sp);
+	debug("GPM4CON = %X\n", GPM4CON);
+
+//	system_clock_init();
 //	init_console();
 	for (;;mdelay(1000),i++) {
 		show_led(i);
-	//	debug("hello kevin %d\r\n", i);
+		debug("hello kevin %d\r\n", i);
 	}
 	return 0;
 }
