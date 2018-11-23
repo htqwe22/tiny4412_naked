@@ -13,7 +13,7 @@
 #define DPHY_RATIO		0x1
 #define ACP_PCLK_RATIO		0x1
 #define ACP_RATIO		0x3
-#if 1
+#if 0
 /* ACLK_ACP = MOUTDMC_BUS/(ACP_RATIO + 1) = 24/4 = 6M
  * PCLK_ACP = ACLK_ACP/(ACP_PCLK_RATIO + 1) = 6/2 = 3M
     SCLK_DPHY = MOUTDPHY/(DPHY_RATIO + 1)   = 24/2 = 12M
@@ -29,14 +29,14 @@
 							| (ACP_RATIO))
 
 #else
-#define CLK_DIV_DMC0_VAL	((CORE_TIMERS_RATIO << 28) \
-							| (COPY2_RATIO << 24) \
-							| (DMCP_RATIO << 20)	\
-							| (DMCD_RATIO << 16)	\
-							| (DMC_RATIO << 12)	\
-							| (DPHY_RATIO << 8)	\
-							| (ACP_PCLK_RATIO << 4)	\
-							| (ACP_RATIO))
+#define CLK_DIV_DMC0_VAL	((0 << 28) \
+							| (0 << 24) \
+							| (1 << 20)	\
+							| (1 << 16)	\
+							| (1 << 12)	\
+							| (1 << 8)	\
+							| (1 << 4)	\
+							| (3))
 #endif
 #define CLK_DIV_DMC1_VAL	0x07071713
 
@@ -61,11 +61,6 @@
 #define CLK_SRC_TOP1_VAL	(0x01111000)
 //#define CLK_SRC_TOP1_VAL	(VPLLSRC_SEL)
 
-/* CLK_SRC_TOP1	*/
-#define VPLLSRC_SEL	0x0	/* 0 = FINPLL, 1 = SCLKHDMI27M	*/
-#define CLK_SRC_TOP1_VAL	(0x01111000)
-//#define CLK_SRC_TOP1_VAL	(VPLLSRC_SEL)
-
 /* CLK_DIV_TOP	*/
 #define ACLK_400_MCUISP_RATIO	0x1
 #define ACLK_266_GPS_RATIO	0x2
@@ -75,13 +70,13 @@
 #define ACLK_100_RATIO	0x7
 #define ACLK_200_RATIO	0x4
 
-#define CLK_DIV_TOP_VAL	((ACLK_400_MCUISP_RATIO << 24) \
-							| (ACLK_266_GPS_RATIO << 20) \
-							| (ONENAND_RATIO << 16) \
-							| (ACLK_133_RATIO << 12) \
-							| (ACLK_160_RATIO << 8)	\
-							| (ACLK_100_RATIO << 4)	\
-							| (ACLK_200_RATIO))
+#define CLK_DIV_TOP_VAL	((1 << 24) \
+							| (2 << 20) \
+							| (1 << 16) \
+							| (5 << 12) \
+							| (4 << 8)	\
+							| (7 << 4)	\
+							| (4))
 
 
 /* CLK_SRC_LEFTBUS	*/
@@ -156,18 +151,18 @@
 #define COPY_RATIO	0x6
 
 
-#define CLK_DIV_CPU0_VAL        ((CORE2_RATIO << 28)    \
-                                | (APLL_RATIO << 24)    \
-                                | (PCLK_DBG_RATIO << 20)\
-                                | (ATB_RATIO << 16)     \
-                                | (PERIPH_RATIO <<12)   \
-				| (COREM1_RATIO << 8)   \
-                                | (COREM0_RATIO << 4)   \
-                                | (CORE_RATIO))
+#define CLK_DIV_CPU0_VAL        ((0 << 28)    \
+                                | (2 << 24)    \
+                                | (1 << 20)\
+                                | (6 << 16)     \
+                                | (7 <<12)   \
+				| (7 << 8)   \
+                                | (3 << 4)   \
+                                | (0))
 
-#define CLK_DIV_CPU1_VAL	((CORES_RATIO << 8) \
-                                |  (HPM_RATIO << 4) \
-                                | (COPY_RATIO))
+#define CLK_DIV_CPU1_VAL	((5 << 8) \
+                                |  (0 << 4) \
+                                | (6))
 
 /* Set PLL */
 #define set_pll(mdiv, pdiv, sdiv)	(1<<31 | mdiv<<16 | pdiv<<8 | sdiv)

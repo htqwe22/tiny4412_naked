@@ -14,19 +14,21 @@ extern void code_relocate(void);
 extern void init_led(void);
 extern unsigned int get_start(void);
 extern unsigned int get_code_size(void);
+extern unsigned int current_pc(void);
 
-int gnum[256];
 int _main(unsigned int start, unsigned int sp)
 {
-	unsigned int link_start;
+	unsigned int link_start, now;
 	unsigned int i = 1;
 	init_console();
 	code_relocate();	
 	link_start = get_start();
 	debug("hello world (%X, %X, %X)\n", start, link_start, sp);
 	debug("GPM4CON = %X\n", GPM4CON);
+	now = current_pc();
+	debug("current= %X\n", now);
 
-//	system_clock_init();
+	system_clock_init();
 //	init_console();
 	for (;;mdelay(1000),i++) {
 		show_led(i);

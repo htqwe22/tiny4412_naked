@@ -1,4 +1,5 @@
 #include "util.h"
+#include "cpu.h"
 extern void init_console(void);
 
 // CMU_CPU
@@ -48,7 +49,6 @@ extern void init_console(void);
 #define VPLL_CON1 (*(volatile unsigned int *)0x1003C124)
 #define VPLL_CON2 (*(volatile unsigned int *)0x1003C128)
 
-
 void debug_clk_regs(int index)
 {
 	ibug("\r\n=========== CMU_CPU ============\r\n");
@@ -94,14 +94,90 @@ void debug_clk_regs(int index)
 	ibug("--------------- L I N E [%d] -----------------------\r\n", index);
 }
 
+
+static clock_init(void)
+{
+	uint32_t ticks;
+	
+	debug_clk_regs(1);
+	// CLK_SRC_CPU = 0 , Set CPU to 24M
+	CLK_SRC_CPU = (0);
+	// delay.
+	for(;ticks < 0x10000; ticks++);
+	// CMU_CPU MUX / DIV
+	CLK_DIV_DMC0 = CLK_DIV_DMC0_VAL;
+	CLK_DIV_DMC1 = CLK_DIV_DMC1_VAL;
+
+	// CMU_TOP MUX / DIV
+	CLK_SRC_TOP0 = CLK_SRC_TOP0_VAL;
+	CLK_SRC_TOP1 = CLK_SRC_TOP1_VAL;
+	for(;ticks < 0x10000; ticks++);
+
+	CLK_DIV_TOP = CLK_DIV_TOP_VAL;
+
+	// CMU_LEFTBUS MUX / DIV
+	CLK_SRC_LEFTBUS = CLK_SRC_LEFTBUS_VAL;
+	for(;ticks < 0x10000; ticks++);
+	CLK_DIV_LEFTBUS = CLK_DIV_LEFRBUS_VAL;
+
+	// CMU_RIGHTBUS MUX / DIV
+	CLK_SRC_RIGHTBUS = CLK_SRC_RIGHTBUS_VAL;
+	for(;ticks < 0x10000; ticks++);
+	CLK_DIV_RIGHTBUS = CLK_DIV_RIGHTBUS_VAL;
+
+	// Set PLL locktime
+	APLL_LOCK = APLL_LOCK_VAL;
+	MPLL_LOCK = MPLL_LOCK_VAL;
+	EPLL_LOCK = EPLL_LOCK_VAL;
+	VPLL_LOCK = VPLL_LOCK_VAL;
+
+	CLK_DIV_CPU0 = CLK_DIV_CPU0_VAL;
+	CLK_DIV_CPU1 = CLK_DIV_CPU1_VAL;
+
+	// @ Set APLL
+	APLL_CON1 = APLL_CON1_VAL;
+	APLL_CON0 = APLL_CON0_VAL;
+	
+	if (MPLL_CON0 == 0xA0640301) {
+		show_led(6);
+		MPLL_CON1 = MPLL_CON1_VAL;
+		MPLL_CON0 = MPLL_CON0_VAL;
+	}
+	// SKEP_MPLL
+	// @ Set EPLL
+	EPLL_CON2 = EPLL_CON2_VAL;
+	EPLL_CON1 = EPLL_CON1_VAL;
+	EPLL_CON0 = EPLL_CON0_VAL;
+
+	// @ Set VPLL
+	VPLL_CON2 = VPLL_CON2_VAL;
+	VPLL_CON1 = VPLL_CON1_VAL;
+	VPLL_CON0 = VPLL_CON0_VAL;
+	for(;ticks < 0x40000; ticks++);
+
+	CLK_SRC_CPU = 0x01000001;
+	CLK_SRC_DMC = 0x00011000;
+	CLK_SRC_TOP0 = 0x00000110;
+	CLK_SRC_TOP1 = 0x01111000;
+
+	for(;ticks < 0x10000; ticks++);
+	
+	debug_clk_regs(2);
+}
+
+
+
 void system_clock_init(void)
 {
 #if 1
+	clock_init();
+#else
 	/*Set CPU to 24M, for safety*/
 	debug_clk_regs(1);
 
 	CLK_SRC_CPU = (0);
-	init_console();
+
+//	init_console();
 	// Set APLL 
 
 	/* 设置APLL推荐设置到1400M
@@ -148,7 +224,7 @@ void system_clock_init(void)
 	*/
 	CLK_DIV_CPU1 = 6 | (0<<4) | (5<<8);
 
-	CLK_SRC_CPU = 1 | (0<<24);
+	CLK_SRC_CPU = 1 | (1<<24);
 	debug_clk_regs(2);
 #endif
 }

@@ -76,8 +76,7 @@ set_zero:
    	bne set_zero
    	
 	@LED_DEBUG #4
-ret:
-		
+ret:	
 	/*get the current addr of start*/	
 	adr r0, _start	
 	/*get the link addr of start, must use _start*/
@@ -88,6 +87,11 @@ ret:
 	add lr, r3, r1 @ new lr
 	
 	@LED_DEBUG #8
+	mov pc, lr
+	
+.global current_pc
+current_pc:
+	mov r0, lr
 	mov pc, lr
 
 .global init_led
