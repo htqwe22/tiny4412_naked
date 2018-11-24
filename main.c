@@ -21,22 +21,30 @@ int _main(unsigned int start, unsigned int sp)
 {
 	unsigned int link_start, now;
 	unsigned int i = 1;
-	init_console();
+	system_clock_init();
+	init_ddr();	
+	tzpc_init();
 	code_relocate();	
+	init_console();
+	debug("memeory inited\n");
+
+	
+//	init_console();
+//	code_relocate();	
 	link_start = get_start();
-	debug("hello world (%X, %X, %X)\n", start, link_start, sp);
+	debug("FIRST INS = %X\n", VA(0x40000000));
 	debug("GPM4CON = %X\n", GPM4CON);
 	now = current_pc();
 	debug("current= %X\n", now);
-
+#if 0
 	system_clock_init();
 	init_ddr();	
 	debug("memeory inited\n");
 	tzpc_init();	
 	code_relocate();
 	link_start = get_start();
-	VA(0X40002000) = 0x12345678;
-	debug("new start at %X\r\n", VA(0X40002000) /*link_start*/);
+#endif	
+	debug("READ data at %X\r\n", VA(0X40002000) /*link_start*/);
 //	init_console();
 	for (;;mdelay(1000),i++) {
 		show_led(i);

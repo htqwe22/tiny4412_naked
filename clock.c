@@ -97,7 +97,7 @@ void debug_clk_regs(int index)
 
 static clock_init(void)
 {
-	debug_clk_regs(1);
+//	debug_clk_regs(1);
 	// CLK_SRC_CPU = 0 , Set CPU to 24M
 	CLK_SRC_CPU = (0);
 	// delay.
@@ -158,7 +158,7 @@ static clock_init(void)
 	CLK_SRC_TOP0 = 0x00000110;
 	CLK_SRC_TOP1 = 0x01111000;
 	tick_count(0x10000);
-	debug_clk_regs(2);
+//	debug_clk_regs(2);
 }
 
 
