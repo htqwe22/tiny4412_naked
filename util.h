@@ -8,6 +8,7 @@
 
 int kv_printf(const char *fmt, ...);
 extern void putc(const char c);
+extern void tick_count(unsigned int ticks);
 typedef unsigned long long uint64_t;
 typedef unsigned int uint32_t;
 typedef unsigned short uint16_t;

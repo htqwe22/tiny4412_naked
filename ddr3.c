@@ -1,9 +1,6 @@
 #include "util.h"
 #include "cpu.h"
-static void delay(unsigned d)
-{
-	for (;d--;);
-}
+
 #define CONFIG_IV_SIZE 0x1F
 #define MCLK_400
 
@@ -16,7 +13,7 @@ static memory_init(void)
 /*****************************************************************/
 	VA(APB_DMC_0_BASE+DMC_PHYCONTROL1) = 0xe0000086;
 	VA(APB_DMC_0_BASE+DMC_PHYZQCONTROL) = 0xE3854C03;
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	VA(APB_DMC_0_BASE+DMC_PHYCONTROL1) = 0xe000008e;
 	VA(APB_DMC_0_BASE+DMC_PHYCONTROL1) = 0xe0000086;
@@ -66,36 +63,36 @@ static memory_init(void)
 
 	/* chip 0 */
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x07000000;
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x00020000;
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x00030000;
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x00010002;
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x00000328;
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x0a000000;
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	/* chip 0 */
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x07100000;
-	delay(0x100000);
+	tick_count(0x100000);
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x00120000;
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x00130000;
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x00110002;
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x00100328;
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	VA(APB_DMC_0_BASE+DMC_DIRECTCMD) = 0x0a100000;
 	VA(APB_DMC_0_BASE+DMC_PHYCONTROL1) = 0xe0000086;
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	/*****************************************************************/
 	/*DREX1***********************************************************/
 	/*****************************************************************/
 	VA(APB_DMC_1_BASE+DMC_PHYCONTROL1) = 0xe0000086;
 	VA(APB_DMC_1_BASE+DMC_PHYZQCONTROL) = 0xE3854C03;
-	delay(0x100000);
+	tick_count(0x100000);
 
 	VA(APB_DMC_1_BASE+DMC_PHYCONTROL1) = 0xe000008e;
 	VA(APB_DMC_1_BASE+DMC_PHYCONTROL1) = 0xe0000086;
@@ -144,31 +141,31 @@ static memory_init(void)
 #endif
 	/* chip 0 */
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x07000000;
-	delay(0x100000);
+	tick_count(0x100000);
 
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x00020000;
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x00030000;
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x00010002;
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x00000328;
-	delay(0x100000);
+	tick_count(0x100000);
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x0a000000;
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	/* chip 1 */
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x07100000;	
-	delay(0x100000);
+	tick_count(0x100000);
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x00120000;
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x00130000;
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x00110002;	
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x00100328;	
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	VA(APB_DMC_1_BASE+DMC_DIRECTCMD) = 0x0a100000;	
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	VA(APB_DMC_1_BASE+DMC_PHYCONTROL1) = 0xe000008e;	
 	VA(APB_DMC_1_BASE+DMC_PHYCONTROL1) = 0xe0000086;	
-	delay(0x100000);
+	tick_count(0x100000);
 	
 	/*****************************************************************/
 	/*Finalize********************************************************/

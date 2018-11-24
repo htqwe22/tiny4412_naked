@@ -128,4 +128,12 @@ icache_open:
 	@bic r0, r0, #0x00001000
 	mcr p15, 0, r0, c1, c0, 0
 	mov pc, lr
+
+.global tick_count
+tick_count:
+	subs r0, r0, #1
+	bne tick_count
+	mov pc,lr
+
+
 	
