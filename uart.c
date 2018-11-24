@@ -43,10 +43,12 @@ void uart_init(int baudrate)
 	VA(CLK_SRC_PERIL0) = (1<<16) | (1<<12) | (1<<8) | (1<<4) | 1;
 	VA(CLK_DIV_PERIL0) = 0; //(7<<20) | (7<<16) | (7<<8) | (7<<4) | 7;
 #else	
+	(0<<24) | (6<<20) |  (6 << 16) | (6<<12) | (6<<8) | (6<<4) | 6;
 	VA(CLK_SRC_PERIL0) = (6<<16) | (6<<12) | (6<<8) | (6<<4) | 6;
+	(7<<20) |  (7 << 16) | (7<<12) | (8<<8) | (8<<4) | 68;
 	VA(CLK_DIV_PERIL0) = (7<<20) | (7<<16) | (7<<8) | (7<<4) | 7;
 #endif	
-	VA(UFCON) = 0x111;
+	VA(UFCON) = 0x011;
 	VA(ULCON) = 3;
 	VA(UCON) = 5;
 
@@ -64,8 +66,8 @@ void putc(const char c)
 {
 	VA(UTXH) = c;
 //	0x20000
-	tick_count(0x1000);
-//	while ((VA(UTRSTAT) &(3 <<1) == 0 ));
+//	tick_count(0x1000);
+	while ((VA(UTRSTAT) &(3 <<1) == 0 ));
 }
 
 int getc(void)
