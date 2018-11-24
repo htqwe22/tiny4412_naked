@@ -20,7 +20,7 @@ _start:
 	msr	cpsr,r0
 	
 	// 设置堆栈在LB2栈的上面4K的位置，参考IROM手册
-	mov fp, sp
+	mov r8, sp
 	@ldr sp, =0x02028400
 	//设置堆栈在最顶
 	ldr sp, =0x02060000
@@ -28,7 +28,7 @@ _start:
 	bl  icache_open
 	bl init_led
 	adr r0, _start	
-	mov r1, fp
+	mov r1, r8
 	@ldr pc, =_main
 	b _main
 	
