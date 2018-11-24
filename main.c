@@ -30,11 +30,13 @@ int _main(unsigned int start, unsigned int sp)
 	debug("current= %X\n", now);
 
 	system_clock_init();
-	init_ddr();
-	tzpc_init();
-	debug("hello kevin %d\r\n", i);
-	VA(0x40000000) = 5;	
-	debug("hello kevin %d\r\n", VA(0x40000000));
+	init_ddr();	
+	debug("memeory inited\n");
+	tzpc_init();	
+	code_relocate();
+	link_start = get_start();
+	VA(0X40002000) = 0x12345678;
+	debug("new start at %X\r\n", VA(0X40002000) /*link_start*/);
 //	init_console();
 	for (;;mdelay(1000),i++) {
 		show_led(i);

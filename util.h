@@ -1,6 +1,10 @@
 #ifndef KV_UTIL__H
 #define KV_UTIL__H
 
+#ifndef NULL
+#define NULL ((void *)0)
+#endif
+
 #define DEBUG
 #ifndef VA
 #define VA(addr)  (*(volatile unsigned int *)(addr))
@@ -21,13 +25,29 @@ typedef signed char int8_t;
 
 typedef unsigned int size_t;
 
+static inline const char *basename(const char *path)
+{
+	const char *p = path;
+	while(*p)
+		p++;
+	while(p > path)
+	{
+		p--;
+		if (*p == '/' || *p == '\\') {
+			p++;
+			break;
+		}
+	}
+	return p;
+}
+
 #define ibug(fmt, ...) kv_printf(fmt, ##__VA_ARGS__)
 #ifdef DEBUG
-#define debug(fmt, ...) kv_printf("[%d] "fmt,__LINE__, ##__VA_ARGS__)
+#define debug(fmt, ...) kv_printf("[%s:%d] "fmt,basename(__FILE__),__LINE__, ##__VA_ARGS__)
 #else
 #define debug(fmt, ...)
 #endif
-#define ebug(fmt, ...) kv_printf("[%d] ERR "fmt,__LINE__, ##__VA_ARGS__)
+#define ebug(fmt, ...) kv_printf("[%s:%d] ERR "fmt,basename(__FILE__),__LINE__, ##__VA_ARGS__)
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))
