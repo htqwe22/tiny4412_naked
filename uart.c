@@ -62,9 +62,9 @@ void uart_init(int baudrate)
 
 void putc(const char c)
 {
-	char i = 40;
+	char i = 0x40;
 	VA(UTXH) = c;
-	//while ((UTRSTAT &(1 <<1) == 0 ));
+	while ((VA(UTRSTAT) &(3 <<1) == 0 ));
 	while (i--);
 }
 

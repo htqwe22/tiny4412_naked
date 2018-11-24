@@ -15,7 +15,8 @@ extern void init_led(void);
 extern unsigned int get_start(void);
 extern unsigned int get_code_size(void);
 extern unsigned int current_pc(void);
-
+extern void init_ddr(void);
+extern void tzpc_init(void);
 int _main(unsigned int start, unsigned int sp)
 {
 	unsigned int link_start, now;
@@ -29,10 +30,15 @@ int _main(unsigned int start, unsigned int sp)
 	debug("current= %X\n", now);
 
 	system_clock_init();
+	init_ddr();
+	tzpc_init();
+	debug("hello kevin %d\r\n", i);
+	VA(0x40000000) = 5;	
+	debug("hello kevin %d\r\n", VA(0x40000000));
 //	init_console();
 	for (;;mdelay(1000),i++) {
 		show_led(i);
-		debug("hello kevin %d\r\n", i);
+//		debug("hello kevin %d\r\n", i);
 	}
 	return 0;
 }

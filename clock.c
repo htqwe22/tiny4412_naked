@@ -103,7 +103,7 @@ static clock_init(void)
 	// CLK_SRC_CPU = 0 , Set CPU to 24M
 	CLK_SRC_CPU = (0);
 	// delay.
-	for(;ticks < 0x10000; ticks++);
+	for(ticks = 0;ticks < 0x10000; ticks++);
 	// CMU_CPU MUX / DIV
 	CLK_DIV_DMC0 = CLK_DIV_DMC0_VAL;
 	CLK_DIV_DMC1 = CLK_DIV_DMC1_VAL;
@@ -111,18 +111,18 @@ static clock_init(void)
 	// CMU_TOP MUX / DIV
 	CLK_SRC_TOP0 = CLK_SRC_TOP0_VAL;
 	CLK_SRC_TOP1 = CLK_SRC_TOP1_VAL;
-	for(;ticks < 0x10000; ticks++);
+	for(ticks = 0;ticks < 0x10000; ticks++);
 
 	CLK_DIV_TOP = CLK_DIV_TOP_VAL;
 
 	// CMU_LEFTBUS MUX / DIV
 	CLK_SRC_LEFTBUS = CLK_SRC_LEFTBUS_VAL;
-	for(;ticks < 0x10000; ticks++);
+	for(ticks = 0;ticks < 0x10000; ticks++);
 	CLK_DIV_LEFTBUS = CLK_DIV_LEFRBUS_VAL;
 
 	// CMU_RIGHTBUS MUX / DIV
 	CLK_SRC_RIGHTBUS = CLK_SRC_RIGHTBUS_VAL;
-	for(;ticks < 0x10000; ticks++);
+	for(ticks = 0;ticks < 0x10000; ticks++);
 	CLK_DIV_RIGHTBUS = CLK_DIV_RIGHTBUS_VAL;
 
 	// Set PLL locktime
@@ -153,14 +153,14 @@ static clock_init(void)
 	VPLL_CON2 = VPLL_CON2_VAL;
 	VPLL_CON1 = VPLL_CON1_VAL;
 	VPLL_CON0 = VPLL_CON0_VAL;
-	for(;ticks < 0x40000; ticks++);
+	for(ticks = 0;ticks < 0x40000; ticks++);
 
 	CLK_SRC_CPU = 0x01000001;
 	CLK_SRC_DMC = 0x00011000;
 	CLK_SRC_TOP0 = 0x00000110;
 	CLK_SRC_TOP1 = 0x01111000;
 
-	for(;ticks < 0x10000; ticks++);
+	for(ticks = 0 ;ticks < 0x10000; ticks++);
 	
 	debug_clk_regs(2);
 }

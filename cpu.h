@@ -1,7 +1,7 @@
 #ifndef TINY4412_CPU__H
 #define TINY4412_CPU__H
 
-
+#define CONFIG_SMDKC220
 /* CLK_DIV_DMC0	*/
 #define CORE_TIMERS_RATIO	0x0
 #define COPY2_RATIO		0x0

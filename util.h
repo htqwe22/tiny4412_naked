@@ -2,6 +2,9 @@
 #define KV_UTIL__H
 
 #define DEBUG
+#ifndef VA
+#define VA(addr)  (*(volatile unsigned int *)(addr))
+#endif
 
 int kv_printf(const char *fmt, ...);
 extern void putc(const char c);
