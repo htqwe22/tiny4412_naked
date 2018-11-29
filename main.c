@@ -1,6 +1,7 @@
 #include "console.h"
 #include "util.h"
 #include "util_string.h"
+#include "mmu.h"
 
 #define GPM4CON (*(volatile unsigned int *)0x110002e0)
 #define GPM4DAT (*(volatile unsigned int *)0x110002e4)
@@ -40,7 +41,8 @@ int _main(unsigned int start, unsigned int sp1)
 	unsigned char *p = (unsigned char *)0x02020000;
 	memcpy2(p, "Hello kevin", 12);
 	debug("get: %s\n", p);
-	
+	init_base_page();
+	enable_mmu();
 #if 0
 	system_clock_init();
 	init_ddr();	
@@ -49,7 +51,7 @@ int _main(unsigned int start, unsigned int sp1)
 	code_relocate();
 	link_start = get_start();
 #endif	
-	debug("READ data at %X\r\n", VA(0X40002000) /*link_start*/);
+	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
 //	init_console();
 	for (;;mdelay(1000),i++) {
 		show_led(i);
