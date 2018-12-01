@@ -43,11 +43,11 @@ static inline const char *basename(const char *path)
 
 #define ibug(fmt, ...) kv_printf(fmt, ##__VA_ARGS__)
 #ifdef DEBUG
-#define debug(fmt, ...) kv_printf("[%s:%d] "fmt,basename(__FILE__),__LINE__, ##__VA_ARGS__)
+#define debug(fmt, ...) {kv_printf("[%s:", basename(__FILE__));kv_printf("%d] "fmt,__LINE__, ##__VA_ARGS__);}
 #else
 #define debug(fmt, ...)
 #endif
-#define ebug(fmt, ...) kv_printf("[%s:%d] ERR "fmt,basename(__FILE__),__LINE__, ##__VA_ARGS__)
+#define ebug(fmt, ...) {kv_printf("[%s:", basename(__FILE__));kv_printf("%d] ERR"fmt,__LINE__, ##__VA_ARGS__);}
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))

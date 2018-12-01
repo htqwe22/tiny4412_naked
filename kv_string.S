@@ -54,5 +54,16 @@ memcmp_ret:
 	ldmfd sp!, {r4, r5}
 	mov pc, lr
 
-
+	.global kv_strchr
+kv_strchr:
+	ldrb r2, [r0], #1
+	cmp r2, r1
+	beq strchr_ok
+	cmp r2, #0
+	bne kv_strchr
+strchr_err:
+	mov r0,#1
+strchr_ok:
+	sub r0,r0,#1
+	mov pc, lr
 

@@ -26,6 +26,7 @@ char *kv_strstr(const char *origin, int origin_len, const char *needle);
 
 unsigned int kv_strlen(const char *s);
 
+char *kv_strchr(const char *s, int c);
 
 
 

@@ -59,7 +59,13 @@ int _main(unsigned int start, unsigned int sp1)
 	char d[20] = "123456789033";
 	kv_memcpy(d, "hello world", 12);
 	debug("%s\n", d);
-	debug("%d \n", kv_memcmp(d, "hello world", 12));
+	debug("%d \n", kv_memcmp(d, "hello worod", 12));
+	p = kv_strchr(d, 'k');
+	if (p) {
+		debug("found at %p, is %c\n", p, *p);
+	}else{
+		debug("not found\n");
+	}
 	for (;;mdelay(1000),i++) {
 		show_led(i);
 //		debug("hello kevin %d\r\n", i);
