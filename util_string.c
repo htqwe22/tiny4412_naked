@@ -138,7 +138,6 @@ char *strstr2(const char *origin, int origin_len, const char *needle)
 	return NULL;
 }
 
-
 #define swap_data(a, b) do{(a) ^= (b); (b) = (a) ^(b); (a) ^= (b);}while(0)
 
 #define swap_arr(arr, arr_size) do {	\

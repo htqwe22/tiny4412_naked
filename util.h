@@ -11,7 +11,7 @@
 #endif
 
 int kv_printf(const char *fmt, ...);
-extern void putc(const char c);
+extern void kv_putc(const char c);
 extern void tick_count(unsigned int ticks);
 typedef unsigned long long uint64_t;
 typedef unsigned int uint32_t;
@@ -41,9 +41,11 @@ static inline const char *basename(const char *path)
 	return p;
 }
 
+
+
 #define ibug(fmt, ...) kv_printf(fmt, ##__VA_ARGS__)
 #ifdef DEBUG
-#define debug(fmt, ...) kv_printf("[%s:%d] "fmt,basename(__FILE__),__LINE__, ##__VA_ARGS__)
+#define debug(fmt, ...) kv_printf("[%s:%d] "fmt,basename(__FILE__), __LINE__, ##__VA_ARGS__)
 #else
 #define debug(fmt, ...)
 #endif
@@ -57,6 +59,7 @@ static inline const char *basename(const char *path)
 #define min(a, b) ((a) < (b) ? (a):(b))
 #define max(a, b) ((a) > (b) ? (a):(b))
 #endif
+
 
 #endif
 

@@ -40,8 +40,8 @@ int kv_printf(const char *fmt, ...)
 	va_end(args);
 	for (i = 0; i< n; i++) {
 		if (sprint_buf[i] == '\n')
-			putc('\r');
-		putc(sprint_buf[i]);
+			kv_putc('\r');
+		kv_putc(sprint_buf[i]);
 	}
 	return n;
 }

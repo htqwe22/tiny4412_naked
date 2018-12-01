@@ -1,4 +1,4 @@
-.text
+
 
 .macro LED_DEBUG num
 	stmfd sp!, {r0-r3,lr}  
@@ -10,6 +10,20 @@
 
 .global _start
 _start:
+	b 	reset
+	bl 	undefined_instruction
+	bl	software_interrupt
+	bl	prefetch_abort
+	bl	data_abort
+	bl	not_used
+	bl 	irq
+	bl 	fiq
+
+
+
+.text
+	.align 2
+reset:	
 	/*
 	 * set the cpu to SVC32 mode
 	 */
@@ -31,6 +45,52 @@ _start:
 	mov r1, r8
 	@ldr pc, =_main
 	b _main
+	
+	.align 2
+	.weak undefined_instruction
+undefined_instruction:
+	mov r0, #1
+	bl show_led
+	b	.
+
+	.align 2
+software_interrupt:
+	mov r0, #2
+	bl show_led
+	b	.
+
+
+	.align 2
+prefetch_abort:
+	mov r0, #3
+	bl show_led
+	b	.
+
+	.align 2
+data_abort:
+	mov r0,	#4
+	bl show_led
+	b	.
+
+	.align 2
+not_used:
+	mov r0, #5
+	bl show_led
+	b	.
+		
+	.align 2
+irq:	
+	mov r0, #6
+	bl show_led
+	b	.
+
+	.align 2
+fiq:	
+	mov r0, #7
+	bl show_led
+	b	.
+
+
 	
 .global get_start
 get_start:

@@ -1,5 +1,6 @@
 #include "console.h"
 #include "util.h"
+#include "kv_string.h"
 #include "util_string.h"
 #include "mmu.h"
 
@@ -51,8 +52,14 @@ int _main(unsigned int start, unsigned int sp1)
 	code_relocate();
 	link_start = get_start();
 #endif	
+//	VA(0x30000000) = 0x80;	//这个地址应该是不能使用的，没有映射
+//	asm("swi #3");
 	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
-//	init_console();
+	debug("len = %d\n", kv_strlen("hello world"));
+	char d[20] = "123456789033";
+	kv_memcpy(d, "hello world", 12);
+	debug("%s\n", d);
+	debug("%d %d\n", kv_memcmp(d, "hello world", 12), kv_memcmp(d, "hello wornd", 12));
 	for (;;mdelay(1000),i++) {
 		show_led(i);
 //		debug("hello kevin %d\r\n", i);

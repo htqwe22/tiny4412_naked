@@ -48,17 +48,16 @@ LDFLAGS += -Map $(MAP_NAME)
 #-lgcc -L/home/ht/.bin/arm-linux-gcc4.5.1/lib/gcc/arm-none-linux-gnueabi/4.5.1/ 
 $(warning SRS is $(SRS),SRC is $(SRC),ELFS is $(ELFS))
 
-$(BIN_NAME):$(OBJS) this.lds
-	$(LD) ${LDFLAGS} $^ -o $(ELFS)
+$(BIN_NAME):$(OBJS) this.lds 
+	$(LD) ${LDFLAGS} $(OBJS) -o $(ELFS)
 #	$(NM) -n $(ELFS) > $(MAP_NAME)
 	$(OBJCOPY) -S -O binary $(ELFS) $@
 	$(OBJDUMP) -S $(ELFS) > $(DUMP_NAME)
 #	cp $@ $(HOME)/armLearn/xmodem/
-
-#$(SRS):%.o:%.S	util.h	
+	
 $(S_OBJS):%.o:%.S
 	$(CC) ${CFLAGS} -c $^ -o $@
-$(C_OBJS):%.o:%.c
+$(C_OBJS):%.o:%.c 
 	$(CC) ${CFLAGS} -c $^ -o $@
 $(CXX_OBJS):%.o:%.cpp
 	$(CXX) ${CFLAGS} -c $^ -o $@
