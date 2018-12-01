@@ -55,6 +55,8 @@ undefined_instruction:
 
 	.align 2
 software_interrupt:
+	ldr r0,[lr,#4];
+	bic r0, r0
 	mov r0, #2
 	bl show_led
 	b	.
@@ -169,7 +171,7 @@ init_led:
 show_led:
 	ldr	r1, =0x110002E4
 	eor r0,r0,#15
-	@and r0,r0,#15
+	and r0,r0,#15
 	str	r0, [r1]
 	mov pc,lr
 	

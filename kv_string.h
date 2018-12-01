@@ -28,16 +28,9 @@ unsigned int kv_strlen(const char *s);
 
 char *kv_strchr(const char *s, int c);
 
-
-
-
-
-
-
-
-
 #ifdef __cplusplus
 }
 #endif
 
 #endif
+

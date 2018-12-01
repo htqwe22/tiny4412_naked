@@ -52,8 +52,8 @@ int _main(unsigned int start, unsigned int sp1)
 	code_relocate();
 	link_start = get_start();
 #endif	
-//	VA(0x30000000) = 0x80;	//这个地址应该是不能使用的，没有映射
-//	asm("swi #3");
+	VA(0x30000000) = 0x80;	//这个地址应该是不能使用的，没有映射
+	asm("swi #5");
 	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
 	debug("len = %d\n", kv_strlen("hello world"));
 	char d[20] = "123456789033";

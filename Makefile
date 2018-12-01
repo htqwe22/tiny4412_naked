@@ -23,7 +23,7 @@ LDFLAGS := -Tthis.lds -nostdlib
 S_OBJS := start.o kv_string.o
 #div.o
 #_udivsi3.o _divsi3.o _modsi3.o _umodsi3.o _ashldi3.o _lshrdi3.o _ashrdi3.o
-C_OBJS :=  main.o clock.o ddr3.o trustzone.o uart.o console.o mmu.o util_string.o
+C_OBJS :=  main.o clock.o ddr3.o trustzone.o uart.o console.o mmu.o util_string.o ring_fifo.o
 CXX_OBJS := 
 
 BIN_NAME := main.bin
