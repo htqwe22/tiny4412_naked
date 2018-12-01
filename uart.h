@@ -6,13 +6,13 @@
 void uart_init(int baudrate);
 
 
-void kv_putc(const char c);
+void putc(const char c);
 
 
-int kv_getc(void);
+int getc(void);
 
 
-void kv_puts(const char *s);
+void puts(const char *s);
 
 
 

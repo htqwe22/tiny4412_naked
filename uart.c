@@ -62,7 +62,7 @@ void uart_init(int baudrate)
 
 }
 
-void kv_putc(const char c)
+void putc(const char c)
 {
 	VA(UTXH) = c;
 //	0x20000
@@ -70,18 +70,18 @@ void kv_putc(const char c)
 	while ((VA(UTRSTAT) &(3 <<1) == 0 ));
 }
 
-int kv_getc(void)
+int getc(void)
 {
 	if (VA(UTRSTAT) & 1)
 		return VA(URXH);
 	return -1;
 }
 
-void kv_puts(const char *s)
+void puts(const char *s)
 {
 	if (s == NULL)
 		return;
 	while (*s) 
-		kv_putc(*s++);
+		putc(*s++);
 }
 

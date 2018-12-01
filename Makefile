@@ -49,13 +49,12 @@ LDFLAGS += -Map $(MAP_NAME)
 $(warning SRS is $(SRS),SRC is $(SRC),ELFS is $(ELFS))
 
 $(BIN_NAME):$(OBJS) this.lds
-	$(LD) ${LDFLAGS} $^ -o $(ELFS)
+	$(LD) ${LDFLAGS} $(OBJS) -o $(ELFS)
 #	$(NM) -n $(ELFS) > $(MAP_NAME)
 	$(OBJCOPY) -S -O binary $(ELFS) $@
 	$(OBJDUMP) -S $(ELFS) > $(DUMP_NAME)
 #	cp $@ $(HOME)/armLearn/xmodem/
-
-#$(SRS):%.o:%.S	util.h	
+	
 $(S_OBJS):%.o:%.S
 	$(CC) ${CFLAGS} -c $^ -o $@
 $(C_OBJS):%.o:%.c
