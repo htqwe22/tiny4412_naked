@@ -20,6 +20,11 @@ extern "C" {
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
+
+inline unsigned char hexchar_to_bin(char hex);
+
+int util_atoi(const char *s);
+
 int hex_string_to_bin(const char *hexstr, int hexstr_len, unsigned char *binbuf, int binbuff_size);
 
 /**/

@@ -102,6 +102,13 @@ get_start:
 	mov pc, lr
 .global code_relocate
 
+.global get_link_addr
+get_link_addr:
+	ldr r0, =_start
+	mov pc, lr
+
+
+
 .global get_code_size
 get_code_size:
 	ldr r1, =_start

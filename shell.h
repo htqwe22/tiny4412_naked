@@ -21,7 +21,7 @@ extern "C" {
 typedef struct 
 {
 	const char *cmd;
-	void (*func)(int argc, char **argv);
+	void (*func)(int argc, char * const argv[]);
 }cmd_list_t;
 
 #define DECLAREE_CMD_FUNC(cmd, func) \

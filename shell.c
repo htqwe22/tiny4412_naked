@@ -23,11 +23,17 @@
 
 #define LOGI kv_printf
 
-static void send_cr(int argc, char **argv);
+static void send_cr(int argc, char * const argv[]);
+static void do_xmodem(int argc, char * const argv[]);
+static void do_mem_show(int argc, char * const argv[]);
+static void do_go(int argc, char * const argv[]);
 
 cmd_list_t cmdlist_arr[] = 
 {
 	{"clear", send_cr},
+	{"xmodem", do_xmodem},
+	{"show", do_mem_show},
+	{"go", do_go},
 };
 
 
@@ -76,7 +82,7 @@ static void stdout_close(void)
 /******************************** For shell ***********************************************/
 #define next_line() console_printf("\r\n") 
 
-static void print_help(int argc, char **argv)
+static void print_help(int argc, char * const argv[])
 {
 #if 0
 	int i;
@@ -90,12 +96,47 @@ static void print_help(int argc, char **argv)
 #endif	
 }
 
-static void send_cr(int argc, char **argv)
+static void send_cr(int argc, char * const argv[])
 {
 	if (argc == 1)
 		console_printf("\033[2J\033[1H");
 }
 
+unsigned from_big_endian(uint8_t *data, unsigned len)
+{
+	unsigned num;
+	for (num = 0; len; len--, data++) {
+		num <<= 8;
+		num |= *data;
+	}
+	return num;
+}
+
+void do_mem_show (int argc, char * const argv[])
+{
+	unsigned offset = 0,length = 0;
+	uint8_t tmp[4];
+	if (argc != 3){
+		ibug("useage show <addr> <length>\n");
+		return ;
+	}
+	
+	length = hex_string_to_bin(argv[1], kv_strlen(argv[1]),tmp, 4);
+	offset = from_big_endian(tmp, length);
+	length = util_atoi(argv[2]);
+	unsigned char *p = (unsigned char *)offset;
+	ibug("%08X: ",offset);
+	debug_data("", p, length);
+}
+
+static void do_go(int argc, char * const argv[])
+{
+	unsigned long addr, length;
+	uint8_t tmp[4];
+	length = hex_string_to_bin(argv[1], kv_strlen(argv[1]),tmp, 4);
+	addr = from_big_endian(tmp, length);
+	((void (*)(void))addr)();
+}
 /********************************** Task ************************************************/
 static void exec_cmd(char *const cmd)
 {
@@ -195,6 +236,285 @@ static void check_user_cmd(void)
 }
 #endif
 
+/****************************** The following is xmode *****************************/
+#define KV_CNTLQ       0x11
+#define KV_CNTLS       0x13
+#define KV_DEL         0x7F
+#define KV_BACKSPACE   0x08
+#define KV_CR          0x0D
+#define KV_LF          0x0A
+#define KV_ESC         0x1B
+
+
+#define KV_XMODEM_SOH		0x01
+#define KV_XMODEM_STX		0x02
+#define KV_XMODEM_EOT		0x04
+#define KV_XMODEM_ACK		0x06
+#define KV_XMODEM_NAK		0x15
+#define KV_XMODEM_CAN		0x18
+
+
+#define XMODEM_SYNC_SOH_DATA_SIZE 	128
+#define XMODEM_SYNC_STX_DATA_SIZE 	1024
+
+typedef enum
+{
+	XMODEM_STD = 0,
+	XMODEM_CRC,
+	XMODEM_E1K,
+	XMODEM_E1G
+}XMODEM_TYPE;
+
+#define MAX_SYNC_TIME	60
+#define MAXRETRANS		16
+#define MAX_ERROR_TIME	10
+#define XMODEM_SYNC_SOH_DATA_SIZE 	128
+#define XMODEM_SYNC_STX_DATA_SIZE 	1024
+#define READCHAR_TIMEOUT	0x200  
+
+
+
+void udelay(uint32_t time)
+{
+	for (;time;time--)
+		tick_count(13500);
+//		tick_count(135000);
+}
+
+static void xmodem_putc(char ch)
+{
+	fputc(ch, stdout);
+}
+
+static int xmodem_getc(int *c,unsigned timeout_ms)
+{
+#define DELAY 1
+	int ch;
+	unsigned counter;
+	timeout_ms = timeout_ms*1000;	// to us
+//	kv_printf("timout %d\n", timeout_ms);
+	for (counter = 0; counter < timeout_ms; )
+	{
+		ch = fgetc(stdin);
+		if (ch < 0)
+		{
+			udelay(DELAY);
+			counter += 100;			
+//			kv_printf("now %d\n", counter);
+		}else{
+			*c = ch;
+//			kv_printf("Get char\n");
+			return 1; //True
+		}
+	}
+//	kv_printf("Get char timeout\n");
+	return 0;
+}
+
+static void flushinput(void)
+{
+	int data;
+	while (xmodem_getc(&data,100))
+		;
+}
+static void xmodem_cancel(void)
+{
+	flushinput();
+	xmodem_putc(KV_XMODEM_CAN);
+	xmodem_putc(KV_XMODEM_CAN);
+	xmodem_putc(KV_XMODEM_CAN);	
+}
+
+//#define DEBUG_XMODE
+#ifdef DEBUG_XMODE
+static char xmode_info[2048];
+short log_index=0;
+#define record_reset() kv_memset(xmode_info,0,sizeof(xmode_info))
+#define record_log(fmt,...) do{log_index+=kv_vsprintf(xmode_info+log_index,fmt,##__VA_ARGS__);}while(0)
+#define show_log() kv_printf("%s\r\n",xmode_info);
+#else
+#define record_reset() 
+#define record_log(...) 
+#define show_log() 
+#endif
+
+extern unsigned short xmodem_crc16(const void *buf, int count,int flag);
+static int compare_check(const unsigned char *buf, int sz,int flag)
+{
+	unsigned short result = xmodem_crc16(buf,sz,flag);
+	record_log("rst:%04x,d1:%02x,d2:%02x",result,buf[sz],buf[sz+1]);
+	if((buf[sz]<<8)+buf[sz+1] != result)
+		return 0;
+	return 1;
+}
+
+static int xmodemReceive(unsigned long dest, XMODEM_TYPE Type)
+{	
+	unsigned char xbuff[1030]; /* 1024 for XModem 1k + 3 head chars + 2 crc + nul */
+	unsigned char *p;
+	unsigned char trychar = 'C';
+	unsigned char packetno = 1; // packet sequence
+	record_reset();
+	unsigned file_len=0;
+	unsigned short i,data_size;
+	int retrans = MAXRETRANS,recv_data;
+	// CRC FLAG = 0 is checksum, = 1 is crc16
+	unsigned char crc_flag,err_cnt = 0;	
+	int error_code=0;
+	switch(Type)
+	{
+		case XMODEM_STD:
+			trychar = KV_XMODEM_NAK;
+			crc_flag = 0;
+			break;
+		case XMODEM_CRC:
+		case XMODEM_E1K:
+			trychar = 'C';
+			crc_flag = 1;
+			break;
+		case XMODEM_E1G:
+			trychar = 'G';
+			crc_flag = 1;
+			break;
+		default:
+			trychar = KV_XMODEM_NAK;
+			crc_flag = 0;
+			break;	 
+	}
+	for(;;){
+		for (i=0;i<MAX_SYNC_TIME;i++) {
+			if(trychar)
+				xmodem_putc(trychar);
+			if((xmodem_getc(&recv_data,READCHAR_TIMEOUT))){
+				switch(recv_data){
+					case KV_XMODEM_SOH:
+					{
+						data_size = XMODEM_SYNC_SOH_DATA_SIZE;
+						record_log("KV_XMODEM_SOH ;");
+						goto start_recv;
+					}
+					case KV_XMODEM_STX:
+					{
+						data_size = XMODEM_SYNC_STX_DATA_SIZE;
+						record_log("KV_XMODEM_STX ;");
+						goto start_recv;					
+					}
+					case KV_XMODEM_EOT:// normal end
+					{
+						xmodem_putc(KV_XMODEM_ACK);
+						record_log("KV_XMODEM_EOT ;");
+						flushinput();
+						// udelay(100);
+						return file_len;
+					}
+					case KV_XMODEM_CAN:
+					{
+						record_log("KV_XMODEM_CAN ;");
+						xmodem_cancel();
+						return -1;
+						/*
+						if(xmodem_getc(&recv_data,READCHAR_TIMEOUT)){
+							xmodem_putc(KV_XMODEM_ACK);
+							flushinput();
+							// Canceled by remote
+							return -1;
+						}*/
+					}
+					default:
+						break;
+				}
+			}
+		}
+		// IF HOST NOT SUPPORT CRC
+		// not receive what I want.
+		if (trychar == 'C') { trychar = KV_XMODEM_NAK; continue; }
+		if(trychar == KV_XMODEM_NAK){
+			xmodem_cancel();
+			return -2;
+		}
+start_recv:
+	if (trychar == 'C') crc_flag = 1;
+	trychar = 0; // Do not send sync charactricter any more.
+	p = xbuff;
+	/*Get the sync data.*/
+	*p++ = (char)recv_data;
+	for (i = 0;  i < (data_size+(crc_flag?1:0)+3); ++i) {
+		if (xmodem_getc(&recv_data,READCHAR_TIMEOUT)==0) goto reject;
+		*p++ = (char)recv_data;
+	}
+	// Check the length
+	record_log("d[1]:%02x,d2:%02x,pckno:%d ;",xbuff[1],xbuff[2],packetno);
+	if (xbuff[1] == (unsigned char)(~xbuff[2]) && 
+		(xbuff[1] == packetno || xbuff[1] == (unsigned char)packetno-1) &&
+		compare_check(&xbuff[3], data_size,crc_flag)) {
+		if (xbuff[1] == packetno)	{
+			p = (char *)dest;
+			kv_memcpy (p+file_len, &xbuff[3], data_size);
+			++packetno;
+			file_len += data_size;
+			retrans = MAXRETRANS+1;
+		}
+		// else xbuff[1] == packetno-1 ,the pre packet
+		if (--retrans <= 0) {
+			flushinput();
+			xmodem_cancel();
+			return -3; /* too many retry error */
+		}
+		xmodem_putc(KV_XMODEM_ACK);
+		continue;
+	}			
+
+reject:
+#if 0
+	xmodem_cancel();
+	printf("xmode error is %d\r\n",error_code);
+	return 7;
+#else	
+	flushinput();
+	// too many rx error, transmit abort
+	if (err_cnt++ > MAX_ERROR_TIME)
+	{
+		xmodem_putc(KV_XMODEM_CAN);
+		xmodem_putc(KV_XMODEM_CAN);
+		xmodem_putc(KV_XMODEM_CAN);
+		error_code = 5;
+		return 0;			
+	}
+	else // re-send the packet
+	{
+		xmodem_putc(KV_XMODEM_NAK);
+	}
+#endif	
+	}
+}
+
+
+static void do_xmodem(int argc, char * const argv[])
+{
+	unsigned int recv_addr;
+	uint8_t tmp[4];
+	int ret_len = 0, len;
+	recv_addr = get_link_addr();	
+	if (argc < 2) 
+	{
+		return;
+	}
+	len = hex_string_to_bin(argv[1], kv_strlen(argv[1]), tmp, 4);
+	recv_addr = from_big_endian(tmp, len);
+	show_led(1);
+	debug("load to 0x%08X\n", recv_addr);
+	ret_len = xmodemReceive(recv_addr, XMODEM_E1K);	
+	show_led(0);
+	debug("over:");
+	xmodem_getc(&len,3000);
+	show_log();
+	debug(" get ret_len = %d\r\n",ret_len);
+}
+
+
+
+#if 0
+
 void _outbyte(int c)
 {
 	fputc((char)c, stdout);
@@ -209,6 +529,7 @@ int _inbyte(unsigned short timeout) // msec timeout
 //	}
 	return -2;
 }
+
 
 static void xmodem_recv(int argc, char **argv)
 {
@@ -234,24 +555,14 @@ static void xmodem_recv(int argc, char **argv)
 	console_printf("xmodem -> [%s]\r\n", fullName);
 
 	stdout_close();
-//	xmodemReceive(fullName);
+	xmodemReceive(fullName);
 
 	//xmodem ?áê???1?ó??o′?????￡?±ü?a2Dá?êy?Yó°?ì?üá?DD′|àí
 	module_memset(xbuff, 0, sizeof(xbuff));
 	
 	stdout_open();
-	
 }
-
-unsigned char cmd_return_log_lv = 1;
-static void cmd_return_control(int argc, char **argv)
-{
-	if (0 == module_strcmp(argv[1], "off"))
-		cmd_return_log_lv = 0;
-	else if (0 == module_strcmp(argv[1], "on"))
-		cmd_return_log_lv = 1;
-}
-
+#endif
 
 void debug_data(const char *name, const uint8_t *data, int len)
 {
@@ -259,7 +570,7 @@ void debug_data(const char *name, const uint8_t *data, int len)
 	LOGI("[%s] (%d)", name, len);
 	for (i = 0; i < len; i++)
 	{
-		if ((i&0x1f) == 0)
+		if ((i&0xf) == 0)
 			LOGI("\n");
 		LOGI("%02X ", data[i]);
 	}

@@ -10,6 +10,9 @@
 #define VA(addr)  (*(volatile unsigned int *)(addr))
 #endif
 
+
+unsigned int get_link_addr(void);
+
 int kv_printf(const char *fmt, ...);
 
 extern void tick_count(unsigned int ticks);

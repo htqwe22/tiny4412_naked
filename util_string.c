@@ -24,7 +24,7 @@ static const char *charlist = "0123456789ABCDEF";
 #define min(a, b)	(a)<(b)?(a):(b)
 #endif
 
-static inline unsigned char hexchar_to_bin(char hex)
+inline unsigned char hexchar_to_bin(char hex)
 {
 	if (hex >= '0' && hex <= '9')
 		return hex-'0';
@@ -74,7 +74,17 @@ int bin_to_hex_string(const unsigned char *binbuf, int binbuff_len, char *hexstr
 	return hexstr_size<<1;
 }
 
+int util_atoi(const char *s)
+{
+	int i, c;
+	for (i = 0; '0' <= *s && *s <= '9'; ++s) {
+		i *= 10;
+		i += *s - '0';
+	}
+	return i;
+}
 
+#if 0
 int memcmp2(const void *s1, const void *s2, unsigned int n)
 {
 	int ret;
@@ -137,7 +147,9 @@ char *strstr2(const char *origin, int origin_len, const char *needle)
 	}
 	return NULL;
 }
+#endif
 
+#if 0
 
 #define swap_data(a, b) do{(a) ^= (b); (b) = (a) ^(b); (a) ^= (b);}while(0)
 
@@ -150,6 +162,7 @@ void swap_byte_arr(unsigned char arr[], int arr_size)
 {
 	swap_arr(arr, arr_size);
 }
+
 
 void swap_short_arr(unsigned short arr[], int arr_size)
 {
@@ -167,7 +180,7 @@ void swap_u64_arr(unsigned    long long arr[], int arr_size)
 	swap_arr(arr, arr_size);
 }
 
-
+#endif
 
 #if 0
 void swap_bytes_unit(void *buff, unsigned int unit_num, short unit_size)

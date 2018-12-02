@@ -12,7 +12,7 @@
 #define GPX3CON (*(volatile unsigned int *)0x11000c60)
 #define GPX3DAT (*(volatile unsigned int *)0x11000c64)
 
-void mdelay(int time);
+void mdelay(unsigned time);
 extern show_led(int num);
 extern void system_clock_init(void);
 extern void debug_clk_regs(int index);
@@ -79,12 +79,12 @@ int _main(unsigned int start, unsigned int sp1)
 	}
 	return 0;	
 }
-
-void mdelay(int time)
+#if 0
+void mdelay(unsigned time)
 {
-	int j;
 	for (; time > 0; time--) {
-		for (j = 0; j < 500; j++) ;
+		tick_count(135000);
 	}
 }
+#endif
 
