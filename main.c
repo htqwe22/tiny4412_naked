@@ -1,5 +1,6 @@
 #include "console.h"
 #include "util.h"
+#include "shell.h"
 #include "kv_string.h"
 #include "util_string.h"
 #include "mmu.h"
@@ -35,9 +36,13 @@ int _main(unsigned int start, unsigned int sp1)
 //	set_sp();
 
 	init_console();
+	ibug("main start\n");
+	init_base_page();
+	enable_mmu();
+	ibug("open mmu\n");
 //	debug("memeory inited bl2 first at %X\n", start);
 // 	ibug("SP at %X\n", sp1);
-	link_start = get_start();
+//	link_start = get_start();
 //	debug("FIRST INS = %X\n", VA(0x40000000));
 //	debug("GPM4CON = %X\n", GPM4CON);
 //	now = current_pc();
@@ -45,9 +50,7 @@ int _main(unsigned int start, unsigned int sp1)
 //	unsigned char *p = (unsigned char *)0x02020000;
 //	kv_memcpy(p, "Hello kevin", 12);
 //	debug("get: %s\n", p);
-	init_base_page();
-	enable_mmu();
-	
+
 #if 0
 	system_clock_init();
 	init_ddr();	
@@ -71,10 +74,8 @@ int _main(unsigned int start, unsigned int sp1)
 	}
 #endif		
 	int ch;
-	for (;;mdelay(1000),i++) {
-		ch = fgetc(stdin);
-		if (ch > 0)
-			fputc((const char)ch, stdout);
+	for (;;) {
+		do_shell_loop();
 	}
 	return 0;	
 }

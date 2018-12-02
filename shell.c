@@ -10,6 +10,8 @@
  **********************************************************************************/
 
 #include "shell.h"
+#include "util.h"
+#include "console.h"
 
 /*******************************************************************/
 
@@ -195,7 +197,7 @@ static void check_user_cmd(void)
 
 void _outbyte(int c)
 {
-	putc((char)c);
+	fputc((char)c, stdout);
 }
 
 int _inbyte(unsigned short timeout) // msec timeout

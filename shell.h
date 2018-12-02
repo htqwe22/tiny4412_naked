@@ -17,11 +17,6 @@ extern "C" {
 #endif
 
 
-typedef struct __FILE 
-{ ///// ADD THIS DEFINITION.
-	int handle;
-}FILE;
-
 /************************ For Register console command ****************************/
 typedef struct 
 {
