@@ -144,8 +144,9 @@ void system_clock_init(void)
 	APLL_CON1 = APLL_CON1_VAL;
 	APLL_CON0 = APLL_CON0_VAL;
 	
-	if (MPLL_CON0 == 0xA0640301) {
-		show_led(6);
+	if (MPLL_CON0 == 0xA0640301) 
+	{
+//		show_led(6);
 		MPLL_CON1 = MPLL_CON1_VAL;
 		MPLL_CON0 = MPLL_CON0_VAL;
 	}
@@ -165,7 +166,7 @@ void system_clock_init(void)
 	CLK_SRC_DMC = 0x00011000;
 	CLK_SRC_TOP0 = 0x00000110;
 	CLK_SRC_TOP1 = 0x01111000;
-	tick_count(0x10000);
+	tick_count(0x40000);
 
 }
 

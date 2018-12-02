@@ -32,15 +32,55 @@ reset:
 	/*0xd3 disable irq and fiq*/
 	orr	r0, r0, #0xd3
 	msr	cpsr,r0
-	
+
+	/* Init led */
+	ldr r0, =0x110002e0	 	
+	ldr r1, [r0] 
+	lsr r1, r1, #16
+	lsl r1, r1, #16
+	ldr r2, =0x1111
+	orr r1, r1, r2
+	str r1, [r0]
+	/*
+	 * disable MMU stuff and caches
+	 */
+ #if 1
+ 	/*
+	* Invalidate L1 I/D
+	*/
+	mov r0, #0 		 @ set up for MCR
+	mcr p15, 0, r0, c8, c7, 0	 @ invalidate TLBs
+	/*disable all cache*/
+	mcr p15, 0, r0, c7, c5, 0	 @ invalidate icache
+
+ 
+ 	@LED_DEBUG #1
+	mrc	p15, 0, r0, c1, c0, 0
+	/*bit 13 ,low address vector 0~0x1c*/
+	bic	r0, r0, #0x00002000	@ clear bits 13 (--V-)
+	/*enable address Align*/
+	bic	r0, r0, #0x00000007	@ clear bits 2:0 (-CAM)
+	orr	r0, r0, #0x00000002	@ set bit 1 (--A-) Align
+	/*bit 11,支持预跳转*/
+	orr	r0, r0, #0x00000800	@ set bit 12 (Z---) BTB
+	mcr	p15, 0, r0, c1, c0, 0
+	nop
+	nop
+	nop
+	nop
+	/**/
+#endif	
 	// 设置堆栈在LB2栈的上面4K的位置，参考IROM手册
 	mov r8, sp
 	@ldr sp, =0x02028400
 	//设置堆栈在最顶
 	ldr sp, =0x02060000
+	@LED_DEBUG #2
 	bl  close_wdt
-	bl  icache_open
-	bl init_led
+	
+	@LED_DEBUG #3
+	bl  icache_open	
+	@LED_DEBUG #4
 	adr r0, _start	
 	mov r1, r8
 	@ldr pc, =_main
@@ -168,7 +208,7 @@ set_sp:
 current_pc:
 	mov r0, lr
 	mov pc, lr
-
+/*
 .global init_led
 init_led:
 	ldr r0, =0x110002e0	 	
@@ -179,7 +219,7 @@ init_led:
 	orr r1, r1, r2
 	str r1, [r0]	
 	mov pc, lr
-	
+*/	
 .global show_led
 show_led:
 	ldr	r1, =0x110002E4

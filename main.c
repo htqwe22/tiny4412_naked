@@ -28,10 +28,13 @@ int _main(unsigned int start, unsigned int sp1)
 {
 	unsigned int link_start, now;
 	unsigned int i = 1;
-	system_clock_init();
+	system_clock_init();	
+	show_led(6);
 	init_ddr();	
+	show_led(15);
 	tzpc_init();
-	code_relocate();
+	code_relocate();	
+	show_led(8);
 	asm("mov sp, #0x80000000\n"); 
 //	set_sp();
 
