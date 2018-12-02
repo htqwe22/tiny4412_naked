@@ -21,6 +21,7 @@ extern unsigned int get_code_size(void);
 extern unsigned int current_pc(void);
 extern void init_ddr(void);
 extern void tzpc_init(void);
+extern void set_sp(void);
 int _main(unsigned int start, unsigned int sp1)
 {
 	unsigned int link_start, now;
@@ -29,21 +30,23 @@ int _main(unsigned int start, unsigned int sp1)
 	init_ddr();	
 	tzpc_init();
 	code_relocate();
-	asm("mov sp, #0x80000000\n");
+	asm("mov sp, #0x80000000\n"); 
+//	set_sp();
+
 	init_console();
 	debug("memeory inited bl2 first at %X\n", start);
  	ibug("SP at %X\n", sp1);
-	
 	link_start = get_start();
 	debug("FIRST INS = %X\n", VA(0x40000000));
 	debug("GPM4CON = %X\n", GPM4CON);
 	now = current_pc();
 	debug("current= %X\n", now);
 	unsigned char *p = (unsigned char *)0x02020000;
-	memcpy2(p, "Hello kevin", 12);
+	kv_memcpy(p, "Hello kevin", 12);
 	debug("get: %s\n", p);
 	init_base_page();
 	enable_mmu();
+	
 #if 0
 	system_clock_init();
 	init_ddr();	
@@ -52,13 +55,14 @@ int _main(unsigned int start, unsigned int sp1)
 	code_relocate();
 	link_start = get_start();
 #endif	
-	VA(0x30000000) = 0x80;	//这个地址应该是不能使用的，没有映射
-	asm("swi #5");
+//	VA(0x30000000) = 0x80;	//这个地址应该是不能使用的，没有映射
+//	asm("swi #5");
 	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
 	debug("len = %d\n", kv_strlen("hello world"));
 	char d[20] = "123456789033";
 	kv_memcpy(d, "hello world", 12);
 	debug("%s\n", d);
+
 	debug("%d \n", kv_memcmp(d, "hello worod", 12));
 	p = kv_strchr(d, 'k');
 	if (p) {
@@ -66,11 +70,14 @@ int _main(unsigned int start, unsigned int sp1)
 	}else{
 		debug("not found\n");
 	}
+		
+	int ch;
 	for (;;mdelay(1000),i++) {
-		show_led(i);
-//		debug("hello kevin %d\r\n", i);
+		ch = getc();
+		if (ch > 0)
+			putc((const char)ch);
 	}
-	return 0;
+	return 0;	
 }
 
 void mdelay(int time)

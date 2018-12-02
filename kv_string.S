@@ -22,6 +22,30 @@ strlen_start:
 	sub r0, r1, #1
 	mov pc, lr
 
+	
+	.global kv_strcpy
+kv_strcpy:
+	mov r2, r0
+strcpy_start:		
+	ldrb r3, [r1], #1
+	strb r3, [r2], #1
+	cmp r3, #0
+	bne strcpy_start
+	mov pc, lr
+
+
+	.global kv_strcat
+kv_strcat:
+	stmfd sp!, {r0-r5, lr}
+	mov r4, r0
+	mov r5, r1
+	bl	kv_strlen
+	add r0, r4, r0	;@new start
+	mov r1, r5
+	bl	kv_strcpy
+	ldmfd sp!, {r0-r5, pc}
+
+	
 	.global kv_memcpy
 kv_memcpy:
 	push {r4}
@@ -36,7 +60,24 @@ memcpy_start:
 memcpy_ret:
 	pop {r4}
 	mov pc, lr
+	
 
+
+
+
+	.global	kv_memset
+kv_memset:
+	mov r3, r0
+memset_start:
+	cmp r2, #0
+	beq memset_ret
+	strb r1, [r3], #1
+	sub r2, r2, #1
+	b memset_start
+memset_ret:
+	mov pc, lr
+
+	
 .global kv_memcmp
 kv_memcmp:
 	stmfd sp!, {r4, r5}
@@ -53,7 +94,24 @@ memcmp_start:
 memcmp_ret:
 	ldmfd sp!, {r4, r5}
 	mov pc, lr
-
+	
+.global kv_strcmp
+kv_strcmp:
+	stmfd sp!, {r4, r5}
+	mov r2, r0
+	mov r3, #1
+	mov r0, #0
+strcmp_start:
+	cmp r3, #0
+	beq strcmp_ret	
+	ldrb r0, [r2], #1
+	ldrb r3, [r1], #1
+	subs r0, r0, r3
+	beq strcmp_start
+strcmp_ret:
+	ldmfd sp!, {r4, r5}
+	mov pc, lr
+	
 	.global kv_strchr
 kv_strchr:
 	ldrb r2, [r0], #1
@@ -66,4 +124,6 @@ strchr_err:
 strchr_ok:
 	sub r0,r0,#1
 	mov pc, lr
+
+
 

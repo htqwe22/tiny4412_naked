@@ -24,7 +24,14 @@ int kv_memcmp(const void *s1, const void *s2, unsigned int n);
 
 char *kv_strstr(const char *origin, int origin_len, const char *needle);
 
+int kv_strcmp(const char *s1, const char *s2);
+
+char *kv_strcpy(char *dest, const char *src);
+
+void *kv_memset(void *s, int c, unsigned int n);
+
 unsigned int kv_strlen(const char *s);
+char *kv_strcat(char *dest, const char *src);
 
 char *kv_strchr(const char *s, int c);
 

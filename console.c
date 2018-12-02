@@ -1,7 +1,6 @@
 #include "console.h"
-#include "uart.h"
 #include "util.h"
-
+#include "kv_string.h"
 /*
  * Storage alignment properties
  */
@@ -22,7 +21,6 @@
 #define SPECIAL	32		/* 0x */
 #define LARGE	64		/* use 'ABCDEF' instead of 'abcdef' */
 #define SMALL	32
-
 
 
 void init_console(void)
@@ -468,6 +466,7 @@ int kv_vsprintf(char *buf, const char *fmt, va_list args)
 	*str = '\0';
 	return str-buf;
 }
+
 
 
 

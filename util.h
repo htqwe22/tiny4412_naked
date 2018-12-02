@@ -5,7 +5,7 @@
 #define NULL ((void *)0)
 #endif
 
-#define DEBUG
+//#define DEBUG
 #ifndef VA
 #define VA(addr)  (*(volatile unsigned int *)(addr))
 #endif

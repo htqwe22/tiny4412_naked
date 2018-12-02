@@ -55,11 +55,13 @@ undefined_instruction:
 
 	.align 2
 software_interrupt:
-	ldr r0,[lr,#4];
-	bic r0, r0
-	mov r0, #2
+	;mov sp, #0x80000000
+	stmfd sp!, {r0-r12, lr}
+	ldr r0,[lr,#-4];
+	bic r0, r0, #0xFF000000
+	mov r0, #7
 	bl show_led
-	b	.
+	ldmfd sp!, {r0-r12, pc}^
 
 
 	.align 2
@@ -151,6 +153,10 @@ ret:
 	@LED_DEBUG #8
 	mov pc, lr
 	
+.global set_sp
+set_sp:
+	ldr sp, =0x7ffff000
+	mov pc, lr
 .global current_pc
 current_pc:
 	mov r0, lr
