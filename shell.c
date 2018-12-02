@@ -32,7 +32,7 @@ cmd_list_t cmdlist_arr[] =
 {
 	{"clear", send_cr},
 	{"xmodem", do_xmodem},
-	{"show", do_mem_show},
+	{"dump", do_mem_show},
 	{"go", do_go},
 };
 
@@ -117,7 +117,7 @@ void do_mem_show (int argc, char * const argv[])
 	unsigned offset = 0,length = 0;
 	uint8_t tmp[4];
 	if (argc != 3){
-		ibug("useage show <addr> <length>\n");
+		ibug("useage dump <addr> <length>\n");
 		return ;
 	}
 	
@@ -133,8 +133,15 @@ static void do_go(int argc, char * const argv[])
 {
 	unsigned long addr, length;
 	uint8_t tmp[4];
-	length = hex_string_to_bin(argv[1], kv_strlen(argv[1]),tmp, 4);
-	addr = from_big_endian(tmp, length);
+	addr = 0x40000000;
+	if (argc != 2){
+		ibug("useage go <addr>\n");		
+		ibug("use default addr 0x40000000\n");
+	}else{
+		length = hex_string_to_bin(argv[1], kv_strlen(argv[1]),tmp, 4);
+		addr = from_big_endian(tmp, length);
+	}
+	kv_printf ("## Starting application at 0x%08lX ...\n", addr);
 	((void (*)(void))addr)();
 }
 /********************************** Task ************************************************/
@@ -494,21 +501,22 @@ static void do_xmodem(int argc, char * const argv[])
 	unsigned int recv_addr;
 	uint8_t tmp[4];
 	int ret_len = 0, len;
-	recv_addr = get_link_addr();	
-	if (argc < 2) 
-	{
-		return;
+	recv_addr = 0x40000000;
+	if (argc != 2){
+		ibug("useage xmode <addr>\n");
+		ibug("use default addr 0x40000000\n");
+	}else{
+		len = hex_string_to_bin(argv[1], kv_strlen(argv[1]), tmp, 4);
+		recv_addr = from_big_endian(tmp, len);
 	}
-	len = hex_string_to_bin(argv[1], kv_strlen(argv[1]), tmp, 4);
-	recv_addr = from_big_endian(tmp, len);
 	show_led(1);
 	debug("load to 0x%08X\n", recv_addr);
 	ret_len = xmodemReceive(recv_addr, XMODEM_E1K);	
 	show_led(0);
-	debug("over:");
-	xmodem_getc(&len,3000);
+	ibug("over:");
+	xmodem_getc(&len,30000);
 	show_log();
-	debug(" get ret_len = %d\r\n",ret_len);
+	ibug(" get ret_len = %d\r\n",ret_len);
 }
 
 

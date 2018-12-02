@@ -36,7 +36,7 @@ int _main(unsigned int start, unsigned int sp1)
 //	set_sp();
 
 	init_console();
-	ibug("main start\n");
+	ibug("\nboot at %#X\n", get_link_addr());
 	init_base_page();
 	enable_mmu();
 	ibug("open mmu\n");
