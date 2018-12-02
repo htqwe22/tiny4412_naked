@@ -18,8 +18,6 @@
 #define module_strlen	kv_strlen
 #define module_strcat	kv_strcat
 #define console_printf  kv_printf
-#define stdin		0
-#define stdout		1
 
 #define LOGI kv_printf
 
@@ -71,16 +69,7 @@ static void stdout_close(void)
 }
 
 
-int fputc(int ch, FILE*f)
-{
-	putc((const char)ch);
-	return ch;
-}
 
-int fgetc(FILE *f) 
-{
-	return getc();
-}	
 
 /******************************** For shell ***********************************************/
 #define next_line() console_printf("\r\n") 

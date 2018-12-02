@@ -1,3 +1,5 @@
+#include "console.h"
+
 #define USE_24M
 
 #ifndef NULL 
@@ -62,26 +64,30 @@ void uart_init(int baudrate)
 
 }
 
-void putc(const char c)
+
+int fputc(int ch, FILE*f)
 {
-	VA(UTXH) = c;
-//	0x20000
-//	tick_count(0x1000);
+	VA(UTXH) = ch;
 	while ((VA(UTRSTAT) &(3 <<1) == 0 ));
+	return ch;
 }
 
-int getc(void)
+int fgetc(FILE *f) 
 {
 	if (VA(UTRSTAT) & 1)
 		return VA(URXH);
 	return -1;
-}
+}	
 
-void puts(const char *s)
+
+
+#if 0
+int puts(const char *s)
 {
 	if (s == NULL)
 		return;
 	while (*s) 
 		putc(*s++);
+	return 1;
 }
-
+#endif

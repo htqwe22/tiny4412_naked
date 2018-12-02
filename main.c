@@ -4,6 +4,7 @@
 #include "util_string.h"
 #include "mmu.h"
 
+
 #define GPM4CON (*(volatile unsigned int *)0x110002e0)
 #define GPM4DAT (*(volatile unsigned int *)0x110002e4)
 // key 
@@ -34,16 +35,16 @@ int _main(unsigned int start, unsigned int sp1)
 //	set_sp();
 
 	init_console();
-	debug("memeory inited bl2 first at %X\n", start);
- 	ibug("SP at %X\n", sp1);
+//	debug("memeory inited bl2 first at %X\n", start);
+// 	ibug("SP at %X\n", sp1);
 	link_start = get_start();
-	debug("FIRST INS = %X\n", VA(0x40000000));
-	debug("GPM4CON = %X\n", GPM4CON);
-	now = current_pc();
-	debug("current= %X\n", now);
-	unsigned char *p = (unsigned char *)0x02020000;
-	kv_memcpy(p, "Hello kevin", 12);
-	debug("get: %s\n", p);
+//	debug("FIRST INS = %X\n", VA(0x40000000));
+//	debug("GPM4CON = %X\n", GPM4CON);
+//	now = current_pc();
+//	debug("current= %X\n", now);
+//	unsigned char *p = (unsigned char *)0x02020000;
+//	kv_memcpy(p, "Hello kevin", 12);
+//	debug("get: %s\n", p);
 	init_base_page();
 	enable_mmu();
 	
@@ -57,25 +58,23 @@ int _main(unsigned int start, unsigned int sp1)
 #endif	
 //	VA(0x30000000) = 0x80;	//这个地址应该是不能使用的，没有映射
 //	asm("swi #5");
-	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
-	debug("len = %d\n", kv_strlen("hello world"));
-	char d[20] = "123456789033";
-	kv_memcpy(d, "hello world", 12);
-	debug("%s\n", d);
-
+//	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
+//	debug("len = %d\n", kv_strlen("hello world"));
+	
+#if 0	
 	debug("%d \n", kv_memcmp(d, "hello worod", 12));
-	p = kv_strchr(d, 'k');
+	char *p = kv_strchr(d, 'k');
 	if (p) {
 		debug("found at %p, is %c\n", p, *p);
 	}else{
 		debug("not found\n");
 	}
-		
+#endif		
 	int ch;
 	for (;;mdelay(1000),i++) {
-		ch = getc();
+		ch = fgetc(stdin);
 		if (ch > 0)
-			putc((const char)ch);
+			fputc((const char)ch, stdout);
 	}
 	return 0;	
 }

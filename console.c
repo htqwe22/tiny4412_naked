@@ -1,3 +1,4 @@
+#include "uart.h"
 #include "console.h"
 #include "util.h"
 #include "kv_string.h"
@@ -38,8 +39,8 @@ int kv_printf(const char *fmt, ...)
 	va_end(args);
 	for (i = 0; i< n; i++) {
 		if (sprint_buf[i] == '\n')
-			putc('\r');
-		putc(sprint_buf[i]);
+			fputc('\r',stdout);
+		fputc(sprint_buf[i], stdout);
 	}
 	return n;
 }

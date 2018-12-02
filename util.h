@@ -5,13 +5,13 @@
 #define NULL ((void *)0)
 #endif
 
-//#define DEBUG
+#define DEBUG
 #ifndef VA
 #define VA(addr)  (*(volatile unsigned int *)(addr))
 #endif
 
 int kv_printf(const char *fmt, ...);
-extern void putc(const char c);
+
 extern void tick_count(unsigned int ticks);
 typedef unsigned long long uint64_t;
 typedef unsigned int uint32_t;
@@ -43,7 +43,8 @@ static inline const char *basename(const char *path)
 
 #define ibug(fmt, ...) kv_printf(fmt, ##__VA_ARGS__)
 #ifdef DEBUG
-#define debug(fmt, ...) {kv_printf("[%s:", basename(__FILE__));kv_printf("%d] "fmt,__LINE__, ##__VA_ARGS__);}
+#define debug(fmt, ...) kv_printf("[%d]" fmt, __LINE__, ##__VA_ARGS__)
+//{kv_printf("[%s:", basename(__FILE__));kv_printf("%d] "fmt,__LINE__, ##__VA_ARGS__);}
 #else
 #define debug(fmt, ...)
 #endif

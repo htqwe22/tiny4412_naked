@@ -4,6 +4,13 @@
 #define CONFIG_SYS_PBSIZE 512
 typedef char * va_list; 
 
+
+typedef int FILE;
+
+#define stdin  	0
+#define stdout	1
+
+
 void init_console(void);
 
 int kv_printf(const char *fmt, ...);
