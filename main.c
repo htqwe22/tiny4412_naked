@@ -5,6 +5,7 @@
 #include "util_string.h"
 #include "mmu.h"
 
+#define BOOT_ADDR	0x60000000
 
 #define GPM4CON (*(volatile unsigned int *)0x110002e0)
 #define GPM4DAT (*(volatile unsigned int *)0x110002e4)
@@ -28,18 +29,23 @@ int _main(unsigned int start, unsigned int sp1)
 {
 	unsigned int link_start, now;
 	unsigned int i = 1;
-	system_clock_init();	
-	show_led(6);
-	init_ddr();	
-	show_led(15);
-	tzpc_init();
+//	show_led(6);
+	link_start = get_link_addr();
+
+	if (link_start == BOOT_ADDR) {
+		system_clock_init();	
+		init_ddr(); 
+		tzpc_init();
+	}
+
 	code_relocate();	
-	show_led(8);
 	asm("mov sp, #0x80000000\n"); 
 //	set_sp();
 
 	init_console();
-	ibug("\nboot at %#X\n", get_link_addr());
+//	debug_clk_regs(1);
+
+	ibug("\nboot at %#X\n", link_start);
 	init_base_page();
 	enable_mmu();
 	ibug("open mmu\n");

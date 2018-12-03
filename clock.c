@@ -51,7 +51,7 @@ extern void init_console(void);
 #if 0
 void debug_clk_regs(int index)
 {
-	ibug("\r\n=========== CMU_CPU ============\r\n");
+//	ibug("\r\n=========== CMU_CPU ============\r\n");
 	ibug("CLK_SRC_CPU:%08X\r\n", CLK_SRC_CPU);
 	ibug("CLK_DIV_CPU0:%08X\r\n", CLK_DIV_CPU0);
 	ibug("CLK_DIV_CPU1:%08X\r\n", CLK_DIV_CPU1);
@@ -91,7 +91,7 @@ void debug_clk_regs(int index)
 	ibug("VPLL_CON1:%08X\r\n", VPLL_CON1);
 	ibug("VPLL_CON2:%08X\r\n", VPLL_CON2);
 	
-	ibug("--------------- L I N E [%d] -----------------------\r\n", index);
+//	ibug("--------------- L I N E [%d] -----------------------\r\n", index);
 }
 #endif
 
@@ -144,7 +144,7 @@ void system_clock_init(void)
 	APLL_CON1 = APLL_CON1_VAL;
 	APLL_CON0 = APLL_CON0_VAL;
 	
-	if (MPLL_CON0 == 0xA0640301) 
+//	if (MPLL_CON0 == 0xA0640301) 
 	{
 //		show_led(6);
 		MPLL_CON1 = MPLL_CON1_VAL;

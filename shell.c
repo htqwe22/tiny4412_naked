@@ -272,12 +272,12 @@ typedef enum
 	XMODEM_E1G
 }XMODEM_TYPE;
 
-#define MAX_SYNC_TIME	60
+#define MAX_SYNC_TIME	100
 #define MAXRETRANS		16
 #define MAX_ERROR_TIME	10
 #define XMODEM_SYNC_SOH_DATA_SIZE 	128
 #define XMODEM_SYNC_STX_DATA_SIZE 	1024
-#define READCHAR_TIMEOUT	0x200  
+#define READCHAR_TIMEOUT	0x400  
 
 
 
@@ -295,7 +295,7 @@ static void xmodem_putc(char ch)
 
 static int xmodem_getc(int *c,unsigned timeout_ms)
 {
-#define DELAY 1
+#define DELAY 2
 	int ch;
 	unsigned counter;
 	timeout_ms = timeout_ms*1000;	// to us
