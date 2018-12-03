@@ -11,13 +11,13 @@
 .global _start
 _start:
 	b 	reset
-	bl 	undefined_instruction
-	bl	software_interrupt
-	bl	prefetch_abort
-	bl	data_abort
-	bl	not_used
-	bl 	irq
-	bl 	fiq
+	b 	undefined_instruction
+	b	software_interrupt
+	b	prefetch_abort
+	b	data_abort
+	b	not_used
+	b 	irq
+	b 	fiq
 
 
 
@@ -95,12 +95,11 @@ undefined_instruction:
 
 	.align 2
 software_interrupt:
-	;mov sp, #0x80000000
 	stmfd sp!, {r0-r12, lr}
-	ldr r0,[lr,#-4];
-	bic r0, r0, #0xFF000000
-	mov r0, #7
-	bl show_led
+	mov r0, lr
+	ldr r1,[lr,#-4];
+	bic r1, r1, #0xFF000000
+	bl exception_software_interrupt
 	ldmfd sp!, {r0-r12, pc}^
 
 
@@ -147,6 +146,10 @@ get_link_addr:
 	ldr r0, =_start
 	mov pc, lr
 
+.global get_sp
+get_sp:
+	mov r0, sp
+	mov pc, lr
 
 
 .global get_code_size
