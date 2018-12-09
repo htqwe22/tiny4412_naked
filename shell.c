@@ -29,16 +29,14 @@ static void do_xmodem(int argc, char * const argv[]);
 static void do_mem_show(int argc, char * const argv[]);
 static void do_go(int argc, char * const argv[]);
 static void do_reboot(int argc, char * const argv[]);
-static void do_sig(int argc, char * const argv[]);
 
 cmd_list_t cmdlist_arr[] = 
 {
 	{"clear", send_cr},
 	{"xmodem", do_xmodem},
-	{"dump", do_mem_show},
+//	{"dump", do_mem_show},
 	{"go", do_go},
 	{"reboot", do_reboot},
-	{"sig", do_sig},
 };
 
 
@@ -116,7 +114,7 @@ unsigned from_big_endian(uint8_t *data, unsigned len)
 	}
 	return num;
 }
-
+#if 0
 void do_mem_show (int argc, char * const argv[])
 {
 	unsigned offset = 0,length = 0;
@@ -133,6 +131,7 @@ void do_mem_show (int argc, char * const argv[])
 	ibug("%08X: ",offset);
 	debug_data("", p, length);
 }
+#endif
 
 static void do_go(int argc, char * const argv[])
 {
@@ -152,18 +151,11 @@ static void do_go(int argc, char * const argv[])
 
 static void do_reboot(int argc, char * const argv[])
 {
-	ibug("rebooting ...\n");
 	VA(0x10020400) = 1;
+//	ibug("rebooting...");
 	while(1)
 	{
-		fgetc(stdin);
 	}
-}
-
-static void do_sig(int argc, char * const argv[])
-{
-	extern void SGI_test(void);
-	SGI_test();
 }
 
 
