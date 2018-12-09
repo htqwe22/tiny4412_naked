@@ -12,166 +12,6 @@
 #include "exception.h"
 #include "util.h"
 
-#define GIC_BASE		0x10480000
-#define ICCICR_CPU0		VA(GIC_BASE)
-#define ICCICR_CPU1		VA(GIC_BASE+0x4000)
-#define ICCICR_CPU2		VA(GIC_BASE+0x8000)
-#define ICCICR_CPU3		VA(GIC_BASE+0xc000)
-
-#define ICCPMR_CPU0		VA(GIC_BASE + 0x0004)
-#define ICCPMR_CPU1		VA(GIC_BASE + 0x4004)
-#define ICCPMR_CPU2		VA(GIC_BASE + 0x8004)
-#define ICCPMR_CPU3		VA(GIC_BASE + 0xC004)
-
-
-
-#define ICCBPR_CPU0		VA(GIC_BASE + 0x0008)
-#define ICCBPR_CPU1		VA(GIC_BASE + 0x4008)
-#define ICCBPR_CPU2		VA(GIC_BASE + 0x8008)
-#define ICCBPR_CPU3		VA(GIC_BASE + 0xC008)
-
-#define ICCIAR_CPU0		VA(GIC_BASE + 0x000C)
-#define ICCIAR_CPU1		VA(GIC_BASE + 0x400C)
-#define ICCIAR_CPU2		VA(GIC_BASE + 0x800C)
-#define ICCIAR_CPU3		VA(GIC_BASE + 0xC00C)
-
-
-#define ICCRPR_CPU0		VA(GIC_BASE + 0x0014)
-#define ICCRPR_CPU1		VA(GIC_BASE + 0x4014)
-#define ICCRPR_CPU2		VA(GIC_BASE + 0x8014)
-#define ICCRPR_CPU3		VA(GIC_BASE + 0xc014)
-
-#define ICCHPIR_CPU0		VA(GIC_BASE + 0x0018)
-#define ICCHPIR_CPU1		VA(GIC_BASE + 0x4018)
-#define ICCHPIR_CPU2		VA(GIC_BASE + 0x8018)
-#define ICCHPIR_CPU3		VA(GIC_BASE + 0xc018)
-
-#define ICCABPR_CPU0		VA(GIC_BASE + 0x001c)
-#define ICCABPR_CPU1		VA(GIC_BASE + 0x401c)
-#define ICCABPR_CPU2		VA(GIC_BASE + 0x801c)
-#define ICCABPR_CPU3		VA(GIC_BASE + 0xc01c)
-
-#define ICDDCR				VA(0x10490000)
-#define ICDICTR				VA(0x10490004)
-#define ICDIIDR				VA(0x10490008)
-
-
-#define ICDISR0_CPU0		VA(0x10490000 + 0x0080)
-#define ICDISR1_CPU0		VA(0x10490000 + 0x0084)
-#define ICDISR2_CPU0		VA(0x10490000 + 0x0088)
-#define ICDISR3_CPU0		VA(0x10490000 + 0x008c)
-#define ICDISR4_CPU0		VA(0x10490000 + 0x0090)
-#define ICDISR0_CPU1		VA(0x10490000 + 0x4080)
-#define ICDISR0_CPU2		VA(0x10490000 + 0x8080)
-#define ICDISR0_CPU3		VA(0x10490000 + 0xc080)
-
-#define ICDISER0_CPU0		VA(0x10490000 + 0x0100)
-#define ICDISER1_CPU0		VA(0x10490000 + 0x0104)
-#define ICDISER2_CPU0		VA(0x10490000 + 0x0108)
-#define ICDISER3_CPU0		VA(0x10490000 + 0x010c)
-#define ICDISER4_CPU0		VA(0x10490000 + 0x0110)
-#define ICDISER0_CPU1		VA(0x10490000 + 0x4110)
-#define ICDISER0_CPU2		VA(0x10490000 + 0x8110)
-#define ICDISER0_CPU3		VA(0x10490000 + 0xc110)
-
-
-#define ICDICER0_CPU0		VA(0x10490000 + 0x0180)
-#define ICDICER1_CPU0		VA(0x10490000 + 0x0184)
-#define ICDICER2_CPU0		VA(0x10490000 + 0x0188)
-#define ICDICER3_CPU0		VA(0x10490000 + 0x018c)
-#define ICDICER4_CPU0		VA(0x10490000 + 0x0190)
-#define ICDICER0_CPU1		VA(0x10490000 + 0x4180)
-#define ICDICER0_CPU2		VA(0x10490000 + 0x8180)
-#define ICDICER0_CPU3		VA(0x10490000 + 0xc180)
-
-#define ICDISPR0_CPU0		VA(0x10490000 + 0x0200)
-#define ICDISPR1_CPU0		VA(0x10490000 + 0x0204)
-#define ICDISPR2_CPU0		VA(0x10490000 + 0x0208)
-#define ICDISPR3_CPU0		VA(0x10490000 + 0x020c)
-#define ICDISPR4_CPU0		VA(0x10490000 + 0x0210)
-#define ICDISPR0_CPU1		VA(0x10490000 + 0x4200)
-#define ICDISPR0_CPU2		VA(0x10490000 + 0x8200)
-#define ICDISPR0_CPU3		VA(0x10490000 + 0xc200)
-
-
-#define ICDICPR0_CPU0		VA(0x10490000 + 0x0280)
-#define ICDICPR1_CPU0		VA(0x10490000 + 0x0284)
-#define ICDICPR2_CPU0		VA(0x10490000 + 0x0288)
-#define ICDICPR3_CPU0		VA(0x10490000 + 0x028C)
-#define ICDICPR4_CPU0		VA(0x10490000 + 0x0290)
-#define ICDICPR0_CPU1		VA(0x10490000 + 0x4280)
-#define ICDICPR0_CPU2		VA(0x10490000 + 0x8280)
-#define ICDICPR0_CPU3		VA(0x10490000 + 0xc280)
-
-#define ICDABR0_CPU0		VA(0x10490000 + 0x0300)
-#define ICDABR1_CPU0		VA(0x10490000 + 0x0304)
-#define ICDABR2_CPU0		VA(0x10490000 + 0x0308)
-#define ICDABR3_CPU0		VA(0x10490000 + 0x030C)
-#define ICDABR4_CPU0		VA(0x10490000 + 0x0310)
-#define ICDABR0_CPU1		VA(0x10490000 + 0x4300)
-#define ICDABR0_CPU2		VA(0x10490000 + 0x8300)
-#define ICDABR0_CPU3		VA(0x10490000 + 0xC300)
-
-#define PPI_STATUS_CPU0		VA(0x10490000 + 0x0D00)
-#define PPI_STATUS_CPU1		VA(0x10490000 + 0x4D00)
-#define PPI_STATUS_CPU2		VA(0x10490000 + 0x8D00)
-#define PPI_STATUS_CPU3		VA(0x10490000 + 0xcD00)
-
-#define ICDSGIR				VA(0x10490000 + 0x0F00)
-
-#define INTEG_EN_C_CPU0		VA(GIC_BASE + 0x40)
-#define INTERRUPT_OUT_CPU0	VA(GIC_BASE + 0x44)
-#define ICCIIDR				VA(GIC_BASE + 0xFC)
-
-void enable_irq_fiq(void)
-{
-	asm(
-		"mrs r0, cpsr\n"
-		"bic r0, #0xC0\n"
-		"msr cpsr, r0\n"
-	);
-}
-
-
-void open_ICCICR(void)
-{
-	unsigned long tmp;
-	tmp = ICCICR_CPU0;
-	tmp |= 1;
-	ICCICR_CPU0 = tmp;
-
-	tmp = ICCICR_CPU1;
-	tmp |= 1;
-	ICCICR_CPU1 = tmp;
-	
-	tmp = ICCICR_CPU2;
-	tmp |= 1;
-	ICCICR_CPU2 = tmp;
-	
-	tmp = ICCICR_CPU3;
-	tmp |= 1;
-	ICCICR_CPU3 = tmp;
-}
-
-void set_ICCPMR(void)
-{
-	unsigned long tmp;
-	tmp = ICCPMR_CPU0;
-	tmp |= 0xff;
-	ICCPMR_CPU0 = tmp;
-
-	tmp = ICCPMR_CPU1;
-	tmp |= 0xff;
-	ICCPMR_CPU1 = tmp;
-	
-	tmp = ICCPMR_CPU2;
-	tmp |= 0xff;
-	ICCPMR_CPU2 = tmp;
-	
-	tmp = ICCPMR_CPU3;
-	tmp |= 0xff;
-	ICCPMR_CPU3 = tmp;
-}
 
 void show_current_sp(unsigned long sp, unsigned long lr)
 {
@@ -200,12 +40,135 @@ void exception_data_abort(unsigned long lr)
 
 void exception_irq(unsigned long lr)
 {
-
+	unsigned long tmp;
+	uint8_t cpu, irq_id;
+	tmp = ICCIAR_CPU(0);
+	cpu = (tmp>>10) & 7;
+	irq_id = tmp & 0x1FF;
+	ibug("from %d, irq %d\n", cpu, irq_id);
+	// 清除中断
+	ICCEOIR_CPU(0) |= irq_id;
 }
 
 void exception_fiq(unsigned long lr)
 {
-
+	ibug("fiq\n");
 }
 
+void enable_irq_fiq(void)
+{
+	asm(
+		"mrs r0, cpsr\n"
+		"bic r0, #0xC0\n"
+		"msr cpsr, r0\n"
+	);
+	/* or cpise i
+	*/
+}
+
+
+void open_ICCICR(void)
+{
+	unsigned long tmp;
+	tmp = ICCICR_CPU(0);
+	tmp |= 1;
+	ICCICR_CPU(0) = tmp;
+
+	tmp = ICCICR_CPU(1);
+	tmp |= 1;
+	ICCICR_CPU(1) = tmp;
+	
+	tmp = ICCICR_CPU(2);
+	tmp |= 1;
+	ICCICR_CPU(2) = tmp;
+	
+	tmp = ICCICR_CPU(3);
+	tmp |= 1;
+	ICCICR_CPU(3) = tmp;
+}
+
+void set_ICCPMR(void)
+{
+	unsigned long tmp;
+	tmp = ICCPMR_CPU(0);
+	tmp |= 0xff;
+	ICCPMR_CPU(0) = tmp;
+
+	tmp = ICCPMR_CPU(1);
+	tmp |= 0xff;
+	ICCPMR_CPU(1) = tmp;
+	
+	tmp = ICCPMR_CPU(2);
+	tmp |= 0xff;
+	ICCPMR_CPU(2) = tmp;
+	
+	tmp = ICCPMR_CPU(3);
+	tmp |= 0xff;
+	ICCPMR_CPU(3) = tmp;
+}
+
+/* 设置组级优先级
+ * 取值7~0，至少一个子优先级
+ */
+void set_ICCBPR(uint8_t group_bits)
+{
+	unsigned long tmp;
+	group_bits = 7-group_bits;
+	tmp = ICCBPR_CPU(0);
+	tmp |= group_bits;
+	ICCBPR_CPU(0) = tmp;
+
+	tmp = ICCBPR_CPU(1);
+	tmp |= group_bits;
+	ICCBPR_CPU(1) = tmp;
+	
+	tmp = ICCBPR_CPU(2);
+	tmp |= group_bits;
+	ICCBPR_CPU(2) = tmp;
+	
+	tmp = ICCBPR_CPU(3);
+	tmp |= group_bits;
+	ICCBPR_CPU(3) = tmp;
+}
+
+
+
+void open_ICDDCR(void)
+{
+	unsigned long tmp;
+	tmp = ICDDCR;
+	tmp |= 1;
+	ICDDCR = tmp;
+}
+
+void SGI_test(void)
+{
+	debug("test gic\n");
+	open_ICCICR(); //使能中断	
+	ICDISER_CPU(0, 0) = 0xFFFF; //在CPU0上使能0~15号中断
+	open_ICDDCR();	//允许所有外设中断
+	
+	set_ICCPMR();	// 设置中断优先级掩码为0xff，所有中断都可以触发
+
+
+	
+	ICDIPR_CPU(0, 0) = 0;	//设置每个中断的优先级为0。这里设置了4个
+	ICDIPR_CPU(1, 0) = 0;
+	ICDIPR_CPU(2, 0) = 0;
+	ICDIPR_CPU(3, 0) = 0;
+
+	// 设置哪个CPU来接受中断
+	ICDIPTR_CPU(0, 0) = 0x01010101; //0101010101 表示ID为0-4的SGI发送给CPU0,这里的第二个参数是发送者CPU
+
+	set_ICCBPR(0);	//我们不抢占
+
+	// 发送SIG信号
+	// bit [25:24] 00表示发送给本寄存器[23:16]号CPU接口， 01表示发送给
+	// 除了请求这个中断的CPU外的其他CPU， 10表示只发送给请求的CPU
+	// bit[23:16] 发送给的CPU 接口list
+	// bit [15]:0表示安全的CPU接口，1表示非安全的CPU接口
+	// bit[3:0] 表示此次要发送的CIG号
+	ICDSGIR = (1<<16) | (0<<15) | 1; //发送1号GIC给0号CPU接口
+
+}
 

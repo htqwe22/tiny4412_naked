@@ -28,6 +28,8 @@ static void send_cr(int argc, char * const argv[]);
 static void do_xmodem(int argc, char * const argv[]);
 static void do_mem_show(int argc, char * const argv[]);
 static void do_go(int argc, char * const argv[]);
+static void do_reboot(int argc, char * const argv[]);
+static void do_sig(int argc, char * const argv[]);
 
 cmd_list_t cmdlist_arr[] = 
 {
@@ -35,6 +37,8 @@ cmd_list_t cmdlist_arr[] =
 	{"xmodem", do_xmodem},
 	{"dump", do_mem_show},
 	{"go", do_go},
+	{"reboot", do_reboot},
+	{"sig", do_sig},
 };
 
 
@@ -145,6 +149,24 @@ static void do_go(int argc, char * const argv[])
 	kv_printf ("## Starting application at 0x%08lX ...\n", addr);
 	((void (*)(void))addr)();
 }
+
+static void do_reboot(int argc, char * const argv[])
+{
+	ibug("rebooting ...\n");
+	VA(0x10020400) = 1;
+	while(1)
+	{
+		fgetc(stdin);
+	}
+}
+
+static void do_sig(int argc, char * const argv[])
+{
+	extern void SGI_test(void);
+	SGI_test();
+}
+
+
 /********************************** Task ************************************************/
 #define ALLOW_ARROW
 #ifdef ALLOW_ARROW
@@ -220,7 +242,7 @@ int do_shell_loop(void)
 			arrow_len = 2;
 			return 0;
 		}
-		if (arrow_len == 2 && (ch == 0x41 || ch == 0x42 || ch == 0x43 || ch == 0x44)) {\
+		if (arrow_len == 2 && (ch == 0x41 || ch == 0x42 || ch == 0x43 || ch == 0x44)) {
 
 			kv_memcpy(xbuff, hisory[0].cmd, hisory[0].len + 1);
 			i =  hisory[0].len;
