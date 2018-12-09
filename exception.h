@@ -35,6 +35,7 @@ void exception_irq(unsigned long lr);
 void exception_fiq(unsigned long lr);
 
 
+void enable_irq_fiq(void);
 
 
 #ifdef __cplusplus

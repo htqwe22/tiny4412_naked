@@ -21,6 +21,7 @@
 #define module_strcat	kv_strcat
 #define console_printf  kv_printf
 
+#define OPS_RECORD_NUM		1
 #define LOGI kv_printf
 
 static void send_cr(int argc, char * const argv[]);
@@ -145,6 +146,18 @@ static void do_go(int argc, char * const argv[])
 	((void (*)(void))addr)();
 }
 /********************************** Task ************************************************/
+#define ALLOW_ARROW
+#ifdef ALLOW_ARROW
+struct cmd_history_node
+{
+	uint16_t len;
+	char cmd[62];
+};
+
+static struct cmd_history_node hisory[OPS_RECORD_NUM];
+static uint8_t arrow_len;
+#endif
+
 static void exec_cmd(char *const cmd)
 {
 	const cmd_list_t *list;
@@ -195,7 +208,36 @@ int do_shell_loop(void)
 #ifdef TEST_UART
 	fputc(ch, stdout);
 #else	
-	if(ch == '\r' || ch == '\n'){
+
+#ifdef ALLOW_ARROW
+	if (arrow_len || ch == 0x1B)
+	{
+		if (ch == 0x1B) {
+			arrow_len = 1;
+			return 0;
+		}
+		if (arrow_len == 1 && ch == 0x5B) {\
+			arrow_len = 2;
+			return 0;
+		}
+		if (arrow_len == 2 && (ch == 0x41 || ch == 0x42 || ch == 0x43 || ch == 0x44)) {\
+
+			kv_memcpy(xbuff, hisory[0].cmd, hisory[0].len + 1);
+			i =  hisory[0].len;
+			console_printf("\r# %s", xbuff);
+			arrow_len = 0;
+			return 0;
+		}
+	}
+#endif
+	if(ch == '\r'){
+#ifdef ALLOW_ARROW		
+		if (i) {
+			hisory[0].len = i;
+			kv_memcpy(hisory[0].cmd, xbuff, i);
+			hisory[0].cmd[i] = 0;
+		}
+#endif	
 //		if(i !=0)
 			xbuff[i]=0;
 		console_printf("\n");

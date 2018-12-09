@@ -26,7 +26,7 @@ extern unsigned int current_pc(void);
 extern void init_ddr(void);
 extern void tzpc_init(void);
 extern void set_sp(void);
-
+extern void dcache_open();
 int _main(unsigned int start, unsigned int sp1)
 {
 	unsigned int link_start, now;
@@ -40,7 +40,8 @@ int _main(unsigned int start, unsigned int sp1)
 		tzpc_init();
 	}
 
-	code_relocate();	
+	code_relocate();
+	dcache_open();
 	asm("mov sp, #0x80000000\n"); 
 //	set_sp();
 
@@ -64,6 +65,8 @@ int _main(unsigned int start, unsigned int sp1)
 
 //	VA(0x30000000) = 0x80;	//这个地址应该是不能使用的，没有映射
 	ibug("SP is %#X\n", get_sp());
+	enable_irq_fiq();
+
 	asm("swi #5");
 //	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
 //	debug("len = %d\n", kv_strlen("hello world"));

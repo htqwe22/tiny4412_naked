@@ -123,15 +123,20 @@ not_used:
 		
 	.align 2
 irq:	
-	mov r0, #6
-	bl show_led
-	b	.
+	subs lr, lr, #4
+	stmfd sp!, {r0-r12, lr}
+	mov r0, lr
+	bl exception_irq
+	ldmfd sp!, {r0-r12, pc}^
+
 
 	.align 2
 fiq:	
-	mov r0, #7
-	bl show_led
-	b	.
+	subs lr, lr, #4
+	stmfd sp!, {r0-r12, lr}
+	mov r0, lr
+	bl exception_fiq
+	ldmfd sp!, {r0-r12, pc}^
 
 
 	
@@ -244,6 +249,14 @@ icache_open:
 	mrc p15, 0, r0, c1, c0, 0
 	orr r0, r0, #0x00001000
 	@bic r0, r0, #0x00001000
+	mcr p15, 0, r0, c1, c0, 0
+	mov pc, lr
+
+.global dcache_open	
+dcache_open:
+	mrc p15, 0, r0, c1, c0, 0
+	orr r0, r0, #0x00000004
+	@bic r0, r0, #0x0000004
 	mcr p15, 0, r0, c1, c0, 0
 	mov pc, lr
 
