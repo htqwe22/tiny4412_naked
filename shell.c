@@ -38,7 +38,7 @@ cmd_list_t cmdlist_arr[] =
 	{"dump", do_mem_show},
 	{"go", do_go},
 	{"reboot", do_reboot},
-	{"sig", do_sig},
+	{"sgi", do_sig},
 };
 
 
@@ -152,7 +152,7 @@ static void do_go(int argc, char * const argv[])
 
 static void do_reboot(int argc, char * const argv[])
 {
-	ibug("rebooting ...\n");
+//	ibug("rebooting ...\n");
 	VA(0x10020400) = 1;
 	while(1)
 	{
@@ -419,6 +419,7 @@ static int compare_check(const unsigned char *buf, int sz,int flag)
 	return 1;
 }
 
+int xmodem_len;
 static int xmodemReceive(unsigned long dest, XMODEM_TYPE Type)
 {	
 	unsigned char xbuff[1030]; /* 1024 for XModem 1k + 3 head chars + 2 crc + nul */
@@ -504,6 +505,8 @@ static int xmodemReceive(unsigned long dest, XMODEM_TYPE Type)
 			return -2;
 		}
 start_recv:
+	xmodem_len = data_size;
+
 	if (trychar == 'C') crc_flag = 1;
 	trychar = 0; // Do not send sync charactricter any more.
 	p = xbuff;
@@ -579,8 +582,9 @@ static void do_xmodem(int argc, char * const argv[])
 	show_led(0);
 	ibug("over:");
 	xmodem_getc(&len,30000);
-	show_log();
-	ibug(" get ret_len = %d\r\n",ret_len);
+	show_log();	
+	ibug("TYPE %d\n", xmodem_len);
+	ibug("get ret_len = %d\r\n",ret_len);
 }
 
 

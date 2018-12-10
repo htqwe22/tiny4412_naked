@@ -170,6 +170,16 @@ extern "C" {
 #define ICDSGIR				VA(DISTRIBUTOR_BASE + 0x0F00)
 
 
+#define GPX3CON (*(volatile unsigned int *)0x11000c60)
+#define GPX3DAT (*(volatile unsigned int *)0x11000c64)
+
+#define EXT_INT43CON		VA(0x11000000 + 0x0E0C)
+#define EXT_INT43_FLTCON0	VA(0x11000000 + 0x0E98)
+#define EXT_INT43_FLTCON1	VA(0x11000000 + 0x0E9C)
+#define EXT_INT43_MASK		VA(0x11000000 + 0x0F0C)
+#define EXT_INT43_PEND		VA(0x11000000 + 0x0F4C)
+
+
 unsigned long get_sp();
 
 void show_current_sp(unsigned long sp, unsigned long lr);

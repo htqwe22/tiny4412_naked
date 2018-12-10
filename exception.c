@@ -45,9 +45,14 @@ void exception_irq(unsigned long lr)
 	tmp = ICCIAR_CPU(0);
 	cpu = (tmp>>10) & 7;
 	irq_id = tmp & 0x1FF;
+		// 清除中断
 	ibug("from %d, irq %d\n", cpu, irq_id);
-	// 清除中断
-	ICCEOIR_CPU(0) |= irq_id;
+
+	ibug("PEND %X\n", EXT_INT43_PEND);
+	EXT_INT43_PEND = 0XFF;
+	
+	ICCEOIR_CPU(0) = irq_id;
+
 }
 
 void exception_fiq(unsigned long lr)
@@ -146,6 +151,7 @@ void SGI_test(void)
 	debug("test gic\n");
 	open_ICCICR(); //使能中断	
 	ICDISER_CPU(0, 0) = 0xFFFF; //在CPU0上使能0~15号中断
+	ICDISER_CPU(0, 1) = 0xFFFF; //在CPU1上使能0~15号中断
 	open_ICDDCR();	//允许所有外设中断
 	
 	set_ICCPMR();	// 设置中断优先级掩码为0xff，所有中断都可以触发
@@ -156,9 +162,14 @@ void SGI_test(void)
 	ICDIPR_CPU(1, 0) = 0;
 	ICDIPR_CPU(2, 0) = 0;
 	ICDIPR_CPU(3, 0) = 0;
-
+	
+	ICDIPR_CPU(0, 1) = 0;	//设置每个中断的优先级为0。这里设置了4个
+	ICDIPR_CPU(1, 1) = 0;	//设置每个中断的优先级为0。这里设置了4个
+	ICDIPR_CPU(2, 1) = 0;	//设置每个中断的优先级为0。这里设置了4个
+	ICDIPR_CPU(3, 1) = 0;	//设置每个中断的优先级为0。这里设置了4个
 	// 设置哪个CPU来接受中断
-	ICDIPTR_CPU(0, 0) = 0x01010101; //0101010101 表示ID为0-4的SGI发送给CPU0,这里的第二个参数是发送者CPU
+	ICDIPTR_CPU(0, 0) = 0x03030303; //0101010101 表示ID为0-4的SGI发送给CPU0,这里的第二个参数是发送者CPU
+	ICDIPTR_CPU(0, 1) = 0x03030303;
 
 	set_ICCBPR(0);	//我们不抢占
 
@@ -168,7 +179,36 @@ void SGI_test(void)
 	// bit[23:16] 发送给的CPU 接口list
 	// bit [15]:0表示安全的CPU接口，1表示非安全的CPU接口
 	// bit[3:0] 表示此次要发送的CIG号
-	ICDSGIR = (1<<16) | (0<<15) | 1; //发送1号GIC给0号CPU接口
+	ICDSGIR = (3<<16) | (0<<15) | 2; //发送1号GIC给0号CPU接口
 
+}
+
+
+
+void gpio_irq_test(void)
+{
+//	debug("test gic\n");
+	open_ICCICR(); //使能中断	
+	// 64号中断
+	ICDISER_CPU(2, 0) = 0x00000001; //在CPU0上使能64号中断
+
+	open_ICDDCR();	//允许所有外设中断
+	
+	set_ICCPMR();	// 设置中断优先级掩码为0xff，所有中断都可以触发
+
+	
+//	ICDIPR_CPU(0, 0) = 0;	//设置每个中断的优先级为0。这里设置了4个
+
+	// 设置哪个CPU来接受中断
+	ICDIPTR_CPU(16, 0) = 0x01; //0101010101 表示ID为0-4的SGI发送给CPU0,这里的第二个参数是发送者CPU
+
+	set_ICCBPR(0);	//我们不抢占
+
+	GPX3CON = (0xF << 8) | (0xF<<12) | (0xF<<16) | (0xF<<20);
+	EXT_INT43CON = (2 << 8) | (2 << 12)  | (2 << 16) | (2 <<20);
+	EXT_INT43_FLTCON0 = (1<<23) | (1<<31);
+	EXT_INT43_FLTCON1 =	 (1<<7) | (1<<15);
+	EXT_INT43_MASK = 0;
+	EXT_INT43_PEND = 0xFF; //这个可清除，也可以查询
 }
 

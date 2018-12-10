@@ -11,8 +11,8 @@
 #define GPM4CON (*(volatile unsigned int *)0x110002e0)
 #define GPM4DAT (*(volatile unsigned int *)0x110002e4)
 // key 
-#define GPX3CON (*(volatile unsigned int *)0x11000c60)
-#define GPX3DAT (*(volatile unsigned int *)0x11000c64)
+//#define GPX3CON (*(volatile unsigned int *)0x11000c60)
+//#define GPX3DAT (*(volatile unsigned int *)0x11000c64)
 
 void mdelay(unsigned time);
 extern show_led(int num);
@@ -66,6 +66,7 @@ int _main(unsigned int start, unsigned int sp1)
 //	VA(0x30000000) = 0x80;	//这个地址应该是不能使用的，没有映射
 	ibug("SP is %#X\n", get_sp());
 	enable_irq_fiq();
+	gpio_irq_test();
 
 	asm("swi #5");
 //	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);

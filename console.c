@@ -33,7 +33,7 @@ int kv_printf(const char *fmt, ...)
 {
 	va_list args;
 	int n,i;
-	char sprint_buf[CONFIG_SYS_PBSIZE];
+	static char sprint_buf[CONFIG_SYS_PBSIZE];
 	va_start(args, fmt);
 	n = kv_vsprintf(sprint_buf, fmt, args);
 	va_end(args);
@@ -284,7 +284,7 @@ size_t strnlen(const char *s, size_t count)
 		/* nothing */;
 	return sc - s;
 }
-
+#if 1
 int kv_vsprintf(char *buf, const char *fmt, va_list args)
 {
 	int len;
@@ -469,5 +469,211 @@ int kv_vsprintf(char *buf, const char *fmt, va_list args)
 }
 
 
+#else
+
+
+
+/**
+ * vsnprintf - Format a string and place it in a buffer
+ * @buf: The buffer to place the result into
+ * @size: The size of the buffer, including the trailing null space
+ * @fmt: The format string to use
+ * @args: Arguments for the format string
+ *
+ * This function follows C99 vsnprintf, but has some extensions:
+ * %pS output the name of a text symbol with offset
+ * %ps output the name of a text symbol without offset
+ * %pF output the name of a function pointer with its offset
+ * %pf output the name of a function pointer without its offset
+ * %pB output the name of a backtrace symbol with its offset
+ * %pR output the address range in a struct resource with decoded flags
+ * %pr output the address range in a struct resource with raw flags
+ * %pM output a 6-byte MAC address with colons
+ * %pm output a 6-byte MAC address without colons
+ * %pI4 print an IPv4 address without leading zeros
+ * %pi4 print an IPv4 address with leading zeros
+ * %pI6 print an IPv6 address with colons
+ * %pi6 print an IPv6 address without colons
+ * %pI6c print an IPv6 address as specified by RFC 5952
+ * %pU[bBlL] print a UUID/GUID in big or little endian using lower or upper
+ *   case.
+ * %n is ignored
+ *
+ * The return value is the number of characters which would
+ * be generated for the given input, excluding the trailing
+ * '\0', as per ISO C99. If you want to have the exact
+ * number of characters written into @buf as return value
+ * (not including the trailing '\0'), use vscnprintf(). If the
+ * return is greater than or equal to @size, the resulting
+ * string is truncated.
+ *
+ * If you're not already dealing with a va_list consider using snprintf().
+ */
+int vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
+{
+	unsigned long long num;
+	char *str, *end;
+	struct printf_spec spec = {0};
+
+	/* Reject out-of-range values early.  Large positive sizes are
+	   used for unknown buffer sizes. */
+	if (WARN_ON_ONCE((int) size < 0))
+		return 0;
+
+	str = buf;
+	end = buf + size;
+
+	/* Make sure end is always >= buf */
+	if (end < buf) {
+		end = ((void *)-1);
+		size = end - buf;
+	}
+
+	while (*fmt) {
+		const char *old_fmt = fmt;
+		int read = format_decode(fmt, &spec);
+
+		fmt += read;
+
+		switch (spec.type) {
+		case FORMAT_TYPE_NONE: {
+			int copy = read;
+			if (str < end) {
+				if (copy > end - str)
+					copy = end - str;
+				memcpy(str, old_fmt, copy);
+			}
+			str += read;
+			break;
+		}
+
+		case FORMAT_TYPE_WIDTH:
+			spec.field_width = va_arg(args, int);
+			break;
+
+		case FORMAT_TYPE_PRECISION:
+			spec.precision = va_arg(args, int);
+			break;
+
+		case FORMAT_TYPE_CHAR: {
+			char c;
+
+			if (!(spec.flags & LEFT)) {
+				while (--spec.field_width > 0) {
+					if (str < end)
+						*str = ' ';
+					++str;
+
+				}
+			}
+			c = (unsigned char) va_arg(args, int);
+			if (str < end)
+				*str = c;
+			++str;
+			while (--spec.field_width > 0) {
+				if (str < end)
+					*str = ' ';
+				++str;
+			}
+			break;
+		}
+
+		case FORMAT_TYPE_STR:
+			str = string(str, end, va_arg(args, char *), spec);
+			break;
+
+		case FORMAT_TYPE_PTR:
+			str = pointer(fmt+1, str, end, va_arg(args, void *),
+				      spec);
+			while (isalnum(*fmt))
+				fmt++;
+			break;
+
+		case FORMAT_TYPE_PERCENT_CHAR:
+			if (str < end)
+				*str = '%';
+			++str;
+			break;
+
+		case FORMAT_TYPE_INVALID:
+			if (str < end)
+				*str = '%';
+			++str;
+			break;
+
+		case FORMAT_TYPE_NRCHARS: {
+			u8 qualifier = spec.qualifier;
+
+			if (qualifier == 'l') {
+				long *ip = va_arg(args, long *);
+				*ip = (str - buf);
+			} else if (_tolower(qualifier) == 'z') {
+				size_t *ip = va_arg(args, size_t *);
+				*ip = (str - buf);
+			} else {
+				int *ip = va_arg(args, int *);
+				*ip = (str - buf);
+			}
+			break;
+		}
+
+		default:
+			switch (spec.type) {
+			case FORMAT_TYPE_LONG_LONG:
+				num = va_arg(args, long long);
+				break;
+			case FORMAT_TYPE_ULONG:
+				num = va_arg(args, unsigned long);
+				break;
+			case FORMAT_TYPE_LONG:
+				num = va_arg(args, long);
+				break;
+			case FORMAT_TYPE_SIZE_T:
+				num = va_arg(args, size_t);
+				break;
+			case FORMAT_TYPE_PTRDIFF:
+				num = va_arg(args, ptrdiff_t);
+				break;
+			case FORMAT_TYPE_UBYTE:
+				num = (unsigned char) va_arg(args, int);
+				break;
+			case FORMAT_TYPE_BYTE:
+				num = (signed char) va_arg(args, int);
+				break;
+			case FORMAT_TYPE_USHORT:
+				num = (unsigned short) va_arg(args, int);
+				break;
+			case FORMAT_TYPE_SHORT:
+				num = (short) va_arg(args, int);
+				break;
+			case FORMAT_TYPE_INT:
+				num = (int) va_arg(args, int);
+				break;
+			default:
+				num = va_arg(args, unsigned int);
+			}
+
+			str = number(str, end, num, spec);
+		}
+	}
+
+	if (size > 0) {
+		if (str < end)
+			*str = '\0';
+		else
+			end[-1] = '\0';
+	}
+
+	/* the trailing null byte doesn't count towards the total */
+	return str-buf;
+
+}
+
+int kv_vsprintf(char *buf, const char *fmt, va_list args)
+{	
+	return vsnprintf(buf, 0xffffffff, fmt, args);
+}
+
+#endif
 
 
