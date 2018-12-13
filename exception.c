@@ -38,18 +38,38 @@ void exception_data_abort(unsigned long lr)
 
 }
 
+extern void timer_irq_handler(void);
+extern uint32_t get_sys_tick(void);
+
+
 void exception_irq(unsigned long lr)
 {
 	unsigned long tmp;
+	static uint32_t counts;
 	uint8_t cpu, irq_id;
 	tmp = ICCIAR_CPU(0);
 	cpu = (tmp>>10) & 7;
 	irq_id = tmp & 0x1FF;
 		// 清除中断
-	ibug("from %d, irq %d\n", cpu, irq_id);
+//	ibug("from %d, irq %d\n", cpu, irq_id);
 
-	ibug("PEND %X\n", EXT_INT43_PEND);
-	EXT_INT43_PEND = 0XFF;
+//	ibug("PEND %X\n", EXT_INT43_PEND);
+	tmp = EXT_INT43_PEND;
+	if (tmp) {
+		ibug("from %d, irq %d\n", cpu, irq_id);
+		ibug("PEND %X\n", tmp);
+		EXT_INT43_PEND = tmp;
+	}
+	tmp = L0_INT_CSTAT;	
+	if (tmp)
+	{
+		timer_irq_handler();			
+		L0_INT_CSTAT = tmp;		
+		if (get_sys_tick() - counts >= 1000) {
+			counts = get_sys_tick();
+			ibug("1 S\n");
+		}
+	}
 	
 	ICCEOIR_CPU(0) = irq_id;
 

@@ -5,6 +5,7 @@
 #include "util_string.h"
 #include "mmu.h"
 #include "exception.h"
+#include "timer.h"
 
 #define BOOT_ADDR	0x60000000
 
@@ -67,8 +68,8 @@ int _main(unsigned int start, unsigned int sp1)
 	ibug("SP is %#X\n", get_sp());
 	enable_irq_fiq();
 	gpio_irq_test();
-
-	asm("swi #5");
+	start_sys_timer(1);
+//	asm("swi #5");
 //	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
 //	debug("len = %d\n", kv_strlen("hello world"));
 	

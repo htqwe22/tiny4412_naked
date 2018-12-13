@@ -179,6 +179,9 @@ extern "C" {
 #define EXT_INT43_MASK		VA(0x11000000 + 0x0F0C)
 #define EXT_INT43_PEND		VA(0x11000000 + 0x0F4C)
 
+#define L0_INT_CSTAT	VA(0X10050000 + 0X0330)
+
+#define IMSR4			VA(0x10440000 + 0X4C)
 
 unsigned long get_sp();
 

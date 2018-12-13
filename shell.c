@@ -12,6 +12,7 @@
 #include "shell.h"
 #include "util.h"
 #include "console.h"
+#include "timer.h"
 
 /*******************************************************************/
 
@@ -31,6 +32,8 @@ static void do_go(int argc, char * const argv[]);
 static void do_reboot(int argc, char * const argv[]);
 static void do_sig(int argc, char * const argv[]);
 
+static void do_timer(int argc, char * const argv[]);
+
 cmd_list_t cmdlist_arr[] = 
 {
 	{"clear", send_cr},
@@ -39,6 +42,7 @@ cmd_list_t cmdlist_arr[] =
 	{"go", do_go},
 	{"reboot", do_reboot},
 	{"sgi", do_sig},
+	{"time", do_timer},
 };
 
 
@@ -166,7 +170,10 @@ static void do_sig(int argc, char * const argv[])
 	SGI_test();
 }
 
-
+static void do_timer(int argc, char * const argv[])
+{	
+	ibug("tick %d\n", get_sys_tick());
+}
 /********************************** Task ************************************************/
 #define ALLOW_ARROW
 #ifdef ALLOW_ARROW
