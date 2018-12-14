@@ -45,11 +45,13 @@ void uart_irq_handler(void)
 	if (tmp & 4) //TX
 	{
 		VA(UINTM) |= 4; // disable
-	}else{
+	}
+	if (tmp & 1)
+	{
 		fstat = VA(UFSTAT);
-		recvbyts = tmp & fstat;
-		if (tmp & (0x100))
-			recvbyts = 256;
+		recvbyts = fstat & 0xff;
+		if (fstat & (0x100))
+			recvbyts = 0xff;
 		while(recvbyts)
 		{
 			ch = VA(URXH);
@@ -58,7 +60,6 @@ void uart_irq_handler(void)
 		}
 		if (VA(UTRSTAT) & 8)
 			VA(UTRSTAT) |= 8;
-
 	}
 	VA(UINTP) = tmp;
 }

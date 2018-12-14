@@ -67,7 +67,7 @@ void exception_irq(unsigned long lr)
 			uart_irq_handler();
 			break;
 	}	
-	ibug("%d", irq_id);
+//	ibug("%d", irq_id);
 	ICCEOIR_CPU(0) = irq_id;
 }
 
@@ -208,8 +208,7 @@ void enable_gic_irq_id(uint16_t id)
 	// 设置哪个CPU来接受中断
 	reg = id >> 2;
 	offset = id & 3;
-	offset <<= 8; //
-	ICDIPTR_CPU(reg, 0) |= (0x01 << offset); //0101010101 表示ID为0-4的SGI发送给CPU0,这里的第二个参数是发送者CPU8
+	ICDIPTR_CPU(reg, 0) |= (0x01 << (offset * 8)); //0101010101 表示ID为0-4的SGI发送给CPU0,这里的第二个参数是发送者CPU8
 
 }
 
