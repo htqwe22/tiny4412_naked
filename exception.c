@@ -40,39 +40,35 @@ void exception_data_abort(unsigned long lr)
 
 extern void timer_irq_handler(void);
 extern uint32_t get_sys_tick(void);
+void gpio_irq_handler(void);
+
+extern void uart_irq_handler(void);
 
 
 void exception_irq(unsigned long lr)
 {
 	unsigned long tmp;
-	static uint32_t counts;
-	uint8_t cpu, irq_id;
+	uint8_t irq_id;
 	tmp = ICCIAR_CPU(0);
-	cpu = (tmp>>10) & 7;
+//	cpu = (tmp>>10) & 7;
 	irq_id = tmp & 0x1FF;
 		// 清除中断
 //	ibug("from %d, irq %d\n", cpu, irq_id);
-
 //	ibug("PEND %X\n", EXT_INT43_PEND);
-	tmp = EXT_INT43_PEND;
-	if (tmp) {
-		ibug("from %d, irq %d\n", cpu, irq_id);
-		ibug("PEND %X\n", tmp);
-		EXT_INT43_PEND = tmp;
-	}
-	tmp = L0_INT_CSTAT;	
-	if (tmp)
+	switch(irq_id)
 	{
-		timer_irq_handler();			
-		L0_INT_CSTAT = tmp;		
-		if (get_sys_tick() - counts >= 1000) {
-			counts = get_sys_tick();
-			ibug("1 S\n");
-		}
-	}
-	
+		case 64:
+			gpio_irq_handler();
+			break;
+		case 74:
+			timer_irq_handler();
+			break;
+		case 84:
+			uart_irq_handler();
+			break;
+	}	
+	ibug("%d", irq_id);
 	ICCEOIR_CPU(0) = irq_id;
-
 }
 
 void exception_fiq(unsigned long lr)
@@ -203,7 +199,47 @@ void SGI_test(void)
 
 }
 
+void enable_gic_irq_id(uint16_t id)
+{
+	uint32_t reg, offset;
+	reg = id >> 5; // /32
+	offset = id & 0x1F;
+	ICDISER_CPU(reg, 0) |=  (1 << offset); 
+	// 设置哪个CPU来接受中断
+	reg = id >> 2;
+	offset = id & 3;
+	offset <<= 8; //
+	ICDIPTR_CPU(reg, 0) |= (0x01 << offset); //0101010101 表示ID为0-4的SGI发送给CPU0,这里的第二个参数是发送者CPU8
 
+}
+
+void gpio_irq_handler(void)
+{
+	uint32_t tmp = EXT_INT43_PEND;
+	
+	if (tmp) {
+		switch(tmp)
+		{
+			case 4:
+				ibug("KEY1\n");
+				break;
+			
+			case 8:
+				ibug("KEY2\n");
+				break;
+			
+			case 16:
+				ibug("KEY3\n");
+				break;
+			case 32:
+				ibug("KEY4\n");
+				break;
+		}
+//		ibug("PEND %X\n", tmp);
+	}
+	EXT_INT43_PEND = tmp;
+
+}
 
 void gpio_irq_test(void)
 {

@@ -27,11 +27,12 @@ extern "C" {
 #define L0_TCON			VA(TIMER_BASE + 0X320)
 #define L0_WSTAT		VA(TIMER_BASE + 0X340)
 #define L0_INT_ENB		VA(TIMER_BASE + 0X334)
-#define L0_INT_CSTA		VA(TIMER_BASE + 0X330)
+#define L0_INT_CSTAT	VA(TIMER_BASE + 0X330)
 #define L0_TCNTO		VA(TIMER_BASE + 0X0300)
 #define L0_FRCNTO		VA(TIMER_BASE + 0X030C)
 #define IESR4			VA(0x10440000 + 0X40)
 //#define ISTR4			VA(0x10440000 + 0X48)
+
 
 void start_sys_timer(uint32_t experiod_ms);
 
