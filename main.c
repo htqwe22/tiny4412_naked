@@ -28,6 +28,14 @@ extern void init_ddr(void);
 extern void tzpc_init(void);
 extern void set_sp(void);
 extern void dcache_open();
+
+static void my_timer_fun(unsigned long args);
+struct timer_args
+{
+	uint32_t times;
+};
+static struct timer_args my_args;
+
 int _main(unsigned int start, unsigned int sp1)
 {
 	unsigned int link_start, now;
@@ -69,10 +77,11 @@ int _main(unsigned int start, unsigned int sp1)
 	enable_irq_fiq();
 	gpio_irq_test();
 	start_sys_timer(1);
+//	int timer_id = start_soft_timer(1000, my_timer_fun , (unsigned long)&my_args);
+//	ibug("get timer_id %d\n", timer_id);
 //	asm("swi #5");
 //	debug("READ data at %X\r\n", VA(0X0) /*link_start*/);
 //	debug("len = %d\n", kv_strlen("hello world"));
-	
 	debug("SP is %#X\n", get_sp());
 	int ch;
 	for (;;) {
@@ -80,6 +89,14 @@ int _main(unsigned int start, unsigned int sp1)
 	}
 	return 0;	
 }
+
+static void my_timer_fun(unsigned long args)
+{
+	struct timer_args *p_args = (struct timer_args *)args;	
+	debug("hello world %d\n", ++p_args->times);
+}
+
+
 #if 0
 void mdelay(unsigned time)
 {

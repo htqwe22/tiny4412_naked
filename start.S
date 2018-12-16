@@ -266,5 +266,15 @@ tick_count:
 	bne tick_count
 	mov pc,lr
 
+.global disable_irq
 
+disable_irq:
+	cpsid i
+	mov pc, lr
+	
+.global enable_irq	
+enable_irq:
+	@	aa msr cpsr_c, r0	@ lower 8 bits
+	cpsie i
+	mov pc, lr
 	

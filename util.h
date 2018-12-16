@@ -12,6 +12,8 @@
 
 
 unsigned int get_link_addr(void);
+extern void disable_irq(void);
+extern void enable_irq(void);
 
 int kv_printf(const char *fmt, ...);
 

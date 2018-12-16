@@ -13,12 +13,73 @@
 #include "exception.h"
 #include "util.h"
 
+
+#define SOFT_TIMER_NUM	5
+struct soft_timer
+{
+	void (*timer_fun)(unsigned long args);
+	unsigned long args;
+	uint32_t period_ms;
+	uint32_t triggle_tick;
+};
+
+
+struct soft_timer g_timers[SOFT_TIMER_NUM];
+
+
 static uint32_t tick_cnt;
+
+int start_soft_timer(uint32_t period_ms, void (*timer_fun)(unsigned long args), unsigned long args)
+{
+	int i;
+	for (i = 0; i < SOFT_TIMER_NUM; i++)
+	{
+		if (!g_timers[i].timer_fun) 
+		{
+			disable_irq();
+			g_timers[i].timer_fun = timer_fun;
+			g_timers[i].period_ms = period_ms;			
+			g_timers[i].args = args;			
+			g_timers[i].triggle_tick = tick_cnt + period_ms;
+			enable_irq();
+			return i;
+		}
+	}
+	return -1;
+}
+
+int mod_soft_timer(int timer_id, uint32_t new_period_ms)
+{
+	if (g_timers[timer_id].timer_fun) {
+		disable_irq();
+		g_timers[timer_id].triggle_tick = tick_cnt + new_period_ms;
+		g_timers[timer_id].period_ms = new_period_ms;
+		enable_irq();
+	}
+
+}
+
+void stop_soft_timer(int timer_id)
+{
+	if (g_timers[timer_id].timer_fun) {
+		disable_irq();
+		g_timers[timer_id].timer_fun = NULL;
+		enable_irq();
+	}
+}
 
 void timer_irq_handler(void)
 {
-	tick_cnt++;
+	int i;
+
 	L0_INT_CSTAT = L0_INT_CSTAT;
+	tick_cnt++;
+	for (i = 0; i < SOFT_TIMER_NUM; i++) {
+		if (g_timers[i].timer_fun && tick_cnt == g_timers[i].triggle_tick) {
+			g_timers[i].timer_fun(g_timers[i].args);
+			g_timers[i].triggle_tick = tick_cnt + g_timers[i].period_ms;
+		}
+	}
 }
 
 uint32_t get_sys_tick(void)

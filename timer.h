@@ -39,9 +39,11 @@ void start_sys_timer(uint32_t experiod_ms);
 uint32_t get_sys_tick(void);
 
 
+int start_soft_timer(uint32_t period_ms, void (*timer_fun)(unsigned long args), unsigned long args);
 
+int mod_soft_timer(int timer_id, uint32_t new_period_ms);
 
-
+void stop_soft_timer(int timer_id);
 
 #ifdef __cplusplus
 }
