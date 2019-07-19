@@ -19,6 +19,7 @@ OBJDUMP := arm-linux-objdump
 #LDFLAGS :=  -Bstatic -T test.lds -v
 # or 链接时使用 $(LD) -Ttext=0xc4000000 -nostdlib test.o -o test
 #LDFLAGS := -Ttext=0xc4000000 -nostdlib 
+CFLAGS += -I.
 LDFLAGS := -Tthis.lds -nostdlib 
 
 S_OBJS := start.o kv_string.o
@@ -58,11 +59,11 @@ $(BIN_NAME):$(OBJS) this.lds
 #	cp $@ $(HOME)/armLearn/xmodem/
 	
 $(S_OBJS):%.o:%.S
-	$(CC) ${CFLAGS} -c $^ -o $@
+	$(CC) -c $^ -o $@ ${CFLAGS} 
 $(C_OBJS):%.o:%.c
-	$(CC) ${CFLAGS} -c $^ -o $@
+	$(CC) -c $^ -o $@ ${CFLAGS} 
 $(CXX_OBJS):%.o:%.cpp
-	$(CXX) ${CFLAGS} -c $^ -o $@
+	$(CXX) -c $^ -o $@ ${CFLAGS} 
 
 clean:
 	rm -f $(BIN_NAME) $(OBJS) $(ELFS) $(MAP_NAME) $(DUMP_NAME)
