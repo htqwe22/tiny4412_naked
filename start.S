@@ -95,13 +95,16 @@ undefined_instruction:
 
 	.align 2
 software_interrupt:
+#if 1
 	stmfd sp!, {r0-r12, lr}
 	mov r0, lr
 	ldr r1,[lr,#-4];
 	bic r1, r1, #0xFF000000
 	bl exception_software_interrupt
 	ldmfd sp!, {r0-r12, pc}^
-
+#else
+	b ctx_swap
+#endif
 
 	.align 2
 prefetch_abort:

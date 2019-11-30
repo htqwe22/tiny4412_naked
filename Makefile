@@ -19,14 +19,15 @@ OBJDUMP := arm-linux-objdump
 #LDFLAGS :=  -Bstatic -T test.lds -v
 # or 链接时使用 $(LD) -Ttext=0xc4000000 -nostdlib test.o -o test
 #LDFLAGS := -Ttext=0xc4000000 -nostdlib 
-CFLAGS += -I.
+CFLAGS += -I. # -Wall
+#CFLAGS += -O2
 LDFLAGS := -Tthis.lds -nostdlib 
 
-S_OBJS := start.o kv_string.o
+S_OBJS := start.o kv_string.o 
 #div.o
 #_udivsi3.o _divsi3.o _modsi3.o _umodsi3.o _ashldi3.o _lshrdi3.o _ashrdi3.o
 C_OBJS :=  main.o clock.o ddr3.o trustzone.o uart.o console.o mmu.o shell.o util_string.o crc16.o
-C_OBJS += exception.o ring_fifo.o timer.o
+C_OBJS += exception.o ring_fifo.o timer.o heap.o kv_usb.o
 CXX_OBJS := 
 
 BIN_NAME := main.bin

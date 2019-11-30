@@ -84,6 +84,27 @@ int util_atoi(const char *s)
 	return i;
 }
 
+
+int kv_strcaecmp(const char *s1, const char *s2)
+{
+	int ret = 0;
+	char ch1, ch2;
+	for (;;s1++, s2++) {
+		ch1 = *s1;
+		ch2 = *s2;
+		if ( ch1 >= 'A' && ch1 <= 'Z')
+			ch1 |= 0x20;
+		if ( ch2 >= 'A' && ch2 <= 'Z')
+			ch2 |= 0x20;
+
+		ret = ch1 - ch2;
+		if (ret || ch2 == 0)
+			break;
+		}
+	return ret;
+}
+
+
 #if 0
 int memcmp2(const void *s1, const void *s2, unsigned int n)
 {

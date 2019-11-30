@@ -8,7 +8,12 @@
 #endif
 
 static struct ring_fifo uart_rx_fifo;
-uint8_t fifo_buffer[512];
+uint8_t fifo_buffer[1024 + 512]; 
+
+static struct ring_fifo uart_tx_fifo;
+uint8_t fifo_tx_buffer[1024];
+
+
 
 #define VA(addr)  (*(volatile unsigned int *)(addr))
 
@@ -67,6 +72,8 @@ void uart_irq_handler(void)
 void uart_init(int baudrate)
 {
 	ring_fifo_init(&uart_rx_fifo, fifo_buffer, sizeof(fifo_buffer), 1);
+	ring_fifo_init(&uart_tx_fifo, fifo_tx_buffer, sizeof(fifo_tx_buffer), 1);
+
 	unsigned int tmp;
 	tmp = VA(GPA0CON);
 	tmp &= ~0xff;
@@ -119,7 +126,23 @@ int fgetc(FILE *f)
 #endif
 }	
 
+int uart_send_use_fifo(const uint8_t *data, int len)
+{
+	return ring_fifo_put(&uart_tx_fifo, data, (uint16_t)len);
+}
 
+int uart_print_tx_fifo(uint16_t len)
+{
+	uint8_t data[512];
+	uint16_t i;
+	len = ring_fifo_get(&uart_tx_fifo, data, len, 0);
+	for (i = 0; i < len; i++) {
+		if (data[i] == '\n')
+			fputc('\r', NULL);
+		fputc(data[i], NULL);
+	}
+	return i;
+}
 
 #if 0
 int puts(const char *s)

@@ -33,16 +33,20 @@ int kv_printf(const char *fmt, ...)
 {
 	va_list args;
 	int n,i;
-	static char sprint_buf[CONFIG_SYS_PBSIZE];
+	char sprint_buf[CONFIG_SYS_PBSIZE];
 	va_start(args, fmt);
 	n = kv_vsprintf(sprint_buf, fmt, args);
 	va_end(args);
+#if 0	
 	for (i = 0; i< n; i++) {
 		if (sprint_buf[i] == '\n')
 			fputc('\r',stdout);
 		fputc(sprint_buf[i], stdout);
 	}
 	return n;
+#else
+	return uart_send_use_fifo(sprint_buf, n);
+#endif
 }
 #if 0
 

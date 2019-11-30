@@ -16,7 +16,7 @@
 
 /*******************************************************************/
 
-#define module_strcmp	kv_strcmp
+#define module_strcmp	kv_strcaecmp
 #define module_memset	kv_memset
 #define module_strlen	kv_strlen
 #define module_strcat	kv_strcat
@@ -34,6 +34,8 @@ static void do_sig(int argc, char * const argv[]);
 
 static void do_timer(int argc, char * const argv[]);
 
+static void do_usb(int argc, char * const argv[]);
+
 cmd_list_t cmdlist_arr[] = 
 {
 	{"clear", send_cr},
@@ -43,6 +45,7 @@ cmd_list_t cmdlist_arr[] =
 	{"reboot", do_reboot},
 	{"sgi", do_sig},
 	{"time", do_timer},
+	{"usb", do_usb},
 };
 
 
@@ -661,5 +664,10 @@ void debug_data(const char *name, const uint8_t *data, int len)
 }
 
 
+static void do_usb(int argc, char * const argv[])
+{
+	debug("start usb\n");
+
+}
 
 

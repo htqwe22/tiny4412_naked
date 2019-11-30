@@ -28,7 +28,9 @@ typedef signed int int32_t;
 typedef signed short int16_t;
 typedef signed char int8_t;
 
-typedef unsigned int size_t;
+typedef long unsigned int size_t;
+
+extern uint32_t get_sys_tick(void);
 
 static inline const char *basename(const char *path)
 {
@@ -48,12 +50,12 @@ static inline const char *basename(const char *path)
 
 #define ibug(fmt, ...) kv_printf(fmt, ##__VA_ARGS__)
 #ifdef DEBUG
-#define debug(fmt, ...) kv_printf("[%d]" fmt, __LINE__, ##__VA_ARGS__)
+#define debug(fmt, ...) kv_printf("[%d]%d:" fmt, __LINE__, get_sys_tick(), ##__VA_ARGS__)
 //{kv_printf("[%s:", basename(__FILE__));kv_printf("%d] "fmt,__LINE__, ##__VA_ARGS__);}
 #else
 #define debug(fmt, ...)
 #endif
-#define ebug(fmt, ...) {kv_printf("[%s:", basename(__FILE__));kv_printf("%d] ERR"fmt,__LINE__, ##__VA_ARGS__);}
+#define ebug(fmt, ...) {kv_printf("[%s:", basename(__FILE__));kv_printf("%d]%d: ERR"fmt,__LINE__, get_sys_tick(), ##__VA_ARGS__);}
 
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))

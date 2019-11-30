@@ -71,7 +71,6 @@ void stop_soft_timer(int timer_id)
 void timer_irq_handler(void)
 {
 	int i;
-
 	L0_INT_CSTAT = L0_INT_CSTAT;
 	tick_cnt++;
 	for (i = 0; i < SOFT_TIMER_NUM; i++) {

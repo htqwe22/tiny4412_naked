@@ -6,6 +6,8 @@
 #include "mmu.h"
 #include "exception.h"
 #include "timer.h"
+#include "task.h"
+#include "kv_usb.h"
 
 #define BOOT_ADDR	0x60000000
 
@@ -28,8 +30,10 @@ extern void init_ddr(void);
 extern void tzpc_init(void);
 extern void set_sp(void);
 extern void dcache_open();
+void* task_fun(void *arg);
 
 static void my_timer_fun(unsigned long args);
+uint32_t stack[500];
 struct timer_args
 {
 	uint32_t times;
@@ -84,11 +88,22 @@ int _main(unsigned int start, unsigned int sp1)
 //	debug("len = %d\n", kv_strlen("hello world"));
 	debug("SP is %#X\n", get_sp());
 	int ch;
+//	init_task();
+//	task_id_t tid = kv_create_task("kevin", task_fun, NULL, stack, 500);
+	usb_init();
 	for (;;) {
 		do_shell_loop();
+		uart_print_tx_fifo(100);
 	}
 	return 0;	
 }
+
+
+void* task_fun(void *arg)
+{
+	debug("hello world %d\n",1111);
+}
+
 
 static void my_timer_fun(unsigned long args)
 {

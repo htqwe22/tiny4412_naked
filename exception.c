@@ -44,6 +44,10 @@ void gpio_irq_handler(void);
 
 extern void uart_irq_handler(void);
 
+void usbd_irq_handler(void)
+{
+	debug("I USB\r\n");
+}
 
 void exception_irq(unsigned long lr)
 {
@@ -65,6 +69,9 @@ void exception_irq(unsigned long lr)
 			break;
 		case 84:
 			uart_irq_handler();
+			break;
+		case 102:	//USBHOST
+			
 			break;
 	}	
 //	ibug("%d", irq_id);

@@ -97,7 +97,7 @@ memcmp_ret:
 	
 .global kv_strcmp
 kv_strcmp:
-	stmfd sp!, {r4, r5}
+	@stmfd sp!, {r4, r5}
 	mov r2, r0
 	mov r3, #1
 	mov r0, #0
@@ -109,7 +109,7 @@ strcmp_start:
 	subs r0, r0, r3
 	beq strcmp_start
 strcmp_ret:
-	ldmfd sp!, {r4, r5}
+	@ldmfd sp!, {r4, r5}
 	mov pc, lr
 	
 	.global kv_strchr
