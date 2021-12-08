@@ -29,6 +29,18 @@ void init_console(void)
 	uart_init(115200);
 }
 
+
+int kv_sprintf(char *str, const char *fmt, ...)
+{
+	va_list args;
+	int n,i;
+	va_start(args, fmt);
+	n = kv_vsprintf(str, fmt, args);
+	va_end(args);
+	return n;
+
+}
+
 int kv_printf(const char *fmt, ...)
 {
 	va_list args;
@@ -44,6 +56,8 @@ int kv_printf(const char *fmt, ...)
 	}
 	return n;
 }
+
+
 #if 0
 
 static noinline char* put_dec(char *buf, unsigned NUM_TYPE num)

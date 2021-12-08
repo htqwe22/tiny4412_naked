@@ -61,7 +61,7 @@ reset:
 	/*enable address Align*/
 	bic	r0, r0, #0x00000007	@ clear bits 2:0 (-CAM)
 	orr	r0, r0, #0x00000002	@ set bit 1 (--A-) Align
-	/*bit 11,支持预跳转*/
+	/*bit 11,支持预跳�?/
 	orr	r0, r0, #0x00000800	@ set bit 12 (Z---) BTB
 	mcr	p15, 0, r0, c1, c0, 0
 	nop
@@ -73,8 +73,7 @@ reset:
 	// 设置堆栈在LB2栈的上面4K的位置，参考IROM手册
 	mov r8, sp
 	@ldr sp, =0x02028400
-	//设置堆栈在最顶
-	ldr sp, =0x02060000
+	//设置堆栈在最�?	ldr sp, =0x02060000
 	@LED_DEBUG #2
 	bl  close_wdt
 	
@@ -166,7 +165,7 @@ code_relocate:
 	beq clean_bss
 	@LED_DEBUG #1
 copy_code:
-	LED_DEBUG #6
+	;LED_DEBUG #6
 	ldr r2, [r0], #4   @ copy from start
 	str r2, [r1], #4   @ copy to linkaddr
 	cmp r1, r3		   @ copy till the bss start

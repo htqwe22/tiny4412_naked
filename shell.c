@@ -29,14 +29,18 @@ static void do_xmodem(int argc, char * const argv[]);
 static void do_mem_show(int argc, char * const argv[]);
 static void do_go(int argc, char * const argv[]);
 static void do_reboot(int argc, char * const argv[]);
+extern void do_ymodem(int argc, char **argv);
+static void do_led(int argc, char * const argv[]);
 
 cmd_list_t cmdlist_arr[] = 
 {
 	{"clear", send_cr},
-	{"xmodem", do_xmodem},
+//	{"xmodem", do_xmodem},
 //	{"dump", do_mem_show},
+//	{"ymodem", do_ymodem},
 	{"go", do_go},
 	{"reboot", do_reboot},
+	{"led", do_led},
 };
 
 
@@ -65,7 +69,7 @@ int force_printf(const char *fmt, ...)
 
 static char stdout_off = 0;
 
-//xmodem, ′??ú??á?1?ó?buffer
+//xmodem, �??ú??á?1?ó?buffer
 char xbuff[1128] = {0}; /* 1024 for XModem 1k + 3 head chars + 2 crc + nul */
 
 void stdout_open(void)
@@ -157,10 +161,28 @@ static void do_reboot(int argc, char * const argv[])
 	{
 	}
 }
+static void do_led(int argc, char * const argv[])
+{
+	unsigned long length;
+	char *ptr ;
+	
+	int num = 15;
+	if (argc > 1) {
+		num = 0;
+		length = kv_strlen(argv[1]);
+		ptr = argv[1];
+		while(length--) {
+			num *= 10;
+			num += *ptr - '0';
+			ptr++;
+		}
+	}
+	show_led(num);
+}
 
 
 /********************************** Task ************************************************/
-#define ALLOW_ARROW
+//#define ALLOW_ARROW
 #ifdef ALLOW_ARROW
 struct cmd_history_node
 {
@@ -344,6 +366,7 @@ void udelay(uint32_t time)
 //		tick_count(135000);
 }
 
+#if 0
 static void xmodem_putc(char ch)
 {
 	fputc(ch, stdout);
@@ -574,7 +597,7 @@ static void do_xmodem(int argc, char * const argv[])
 	show_log();
 	ibug(" get ret_len = %d\r\n",ret_len);
 }
-
+#endif
 
 
 #if 0
@@ -621,7 +644,7 @@ static void xmodem_recv(int argc, char **argv)
 	stdout_close();
 	xmodemReceive(fullName);
 
-	//xmodem ?áê???1?ó??o′?????￡?±ü?a2Dá?êy?Yó°?ì?üá?DD′|àí
+	//xmodem ?áê???1?ó??o�?????�?±ü?a2Dá?êy?Yó°?ì?üá?DD′|àí
 	module_memset(xbuff, 0, sizeof(xbuff));
 	
 	stdout_open();

@@ -21,7 +21,6 @@ extern "C" {
 #define NULL ((void*)0)
 #endif
 
-inline unsigned char hexchar_to_bin(char hex);
 
 int util_atoi(const char *s);
 

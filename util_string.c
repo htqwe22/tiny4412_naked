@@ -24,7 +24,7 @@ static const char *charlist = "0123456789ABCDEF";
 #define min(a, b)	(a)<(b)?(a):(b)
 #endif
 
-inline unsigned char hexchar_to_bin(char hex)
+static inline unsigned char hexchar_to_bin(char hex)
 {
 	if (hex >= '0' && hex <= '9')
 		return hex-'0';
@@ -76,7 +76,7 @@ int bin_to_hex_string(const unsigned char *binbuf, int binbuff_len, char *hexstr
 
 int util_atoi(const char *s)
 {
-	int i, c;
+	int i;
 	for (i = 0; '0' <= *s && *s <= '9'; ++s) {
 		i *= 10;
 		i += *s - '0';
